@@ -76,7 +76,7 @@ export const useCryptoStore = defineStore('crypto', {
         this.assets = await api.getMarketData()
         
         // Fetch historical data for Bitcoin
-        const btcSymbols = ['bitcoin', 'BTCUSDT', 'BTC']
+        const btcSymbols = ['BTCUSDT', 'BTC']
         let historicalData: CandleData[] = []
         
         try {

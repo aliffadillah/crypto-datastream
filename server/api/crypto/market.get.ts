@@ -1,4 +1,4 @@
-import https from 'https'
+import { fetchBinance } from '../../utils/binanceClient'
 
 interface BinanceTickerResponse {
   lastPrice: string
@@ -19,8 +19,6 @@ interface CryptoAsset {
   lastUpdate: Date
 }
 
-
-
 export default defineEventHandler(async (event): Promise<CryptoAsset[]> => {
   try {
     const symbols = [
@@ -36,8 +34,8 @@ export default defineEventHandler(async (event): Promise<CryptoAsset[]> => {
     ]
     
     const promises: Promise<CryptoAsset>[] = symbols.map(async (symbol): Promise<CryptoAsset> => {
-      const tickerResponse = await $fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`,
+      const tickerResponse = await fetchBinance<BinanceTickerResponse>(
+        `/api/v3/ticker/24hr?symbol=${symbol}`,
         {
           retry: 2,
           timeout: 10000,

@@ -1,23 +1,32 @@
 <template>
-  <div class="card animate-fade-in">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-xl font-display font-bold text-text-primary mb-1">Cryptocurrency Prices by Market Cap</h2>
-        <p class="text-sm text-text-tertiary">
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm animate-fade-in">
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex-1">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900">
+            Live Market Prices
+          </h2>
+        </div>
+        <p class="text-sm text-gray-600 ml-13">
           The global crypto market cap is 
-          <span class="font-semibold text-text-secondary">$1.71T</span>, 
-          a <span class="text-success font-semibold">1.49%</span> increase over the last day.
+          <span class="font-semibold text-gray-900">$1.71T</span>, 
+          a <span class="text-success font-semibold">↑ 1.49%</span> increase over the last day
         </p>
       </div>
-      <div class="flex items-center gap-3">
-        <div class="text-xs text-text-tertiary">
+      <div class="flex items-center gap-4">
+        <div class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
           <span v-if="lastUpdate">Updated {{ timeAgo }}</span>
         </div>
-        <button class="flex items-center gap-2 px-3 py-2 bg-finance-hover rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-          <span>Show Stats</span>
-          <div class="w-10 h-5 bg-finance-border rounded-full relative">
-            <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 shadow-sm"></div>
-          </div>
+        <button class="flex items-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-semibold text-gray-900 border border-gray-200 hover:border-gray-300 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Statistics</span>
         </button>
       </div>
     </div>
@@ -25,13 +34,13 @@
     <div class="overflow-x-auto -mx-6 px-6">
       <table class="w-full">
         <thead>
-          <tr class="border-b border-finance-border">
-            <th class="text-left py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">#</th>
-            <th class="text-left py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">Name</th>
-            <th class="text-right py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">Price</th>
-            <th class="text-right py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">24h Change</th>
-            <th class="text-right py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">Volume 24h</th>
-            <th class="text-right py-3 px-4 text-xs font-semibold text-text-tertiary uppercase tracking-wider">Last 7 Days</th>
+          <tr class="border-b-2 border-finance-border">
+            <th class="text-left py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">#</th>
+            <th class="text-left py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">Name</th>
+            <th class="text-right py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">Price</th>
+            <th class="text-right py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">24h Change</th>
+            <th class="text-right py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">Volume 24h</th>
+            <th class="text-right py-4 px-5 text-xs font-black text-text-muted uppercase tracking-wider bg-finance-hover/30">Last 7 Days</th>
           </tr>
         </thead>
         <tbody>
@@ -41,39 +50,41 @@
             class="table-row"
             :class="getPriceFlashClass(asset)"
           >
-            <td class="py-4 px-4 text-text-tertiary text-sm font-medium">
-              {{ index + 1 }}
+            <td class="py-5 px-5 text-text-muted text-sm font-bold">
+              <div class="w-8 h-8 rounded-full bg-finance-hover flex items-center justify-center text-xs">
+                {{ index + 1 }}
+              </div>
             </td>
-            <td class="py-4 px-4">
-              <div class="flex items-center gap-3">
+            <td class="py-5 px-5">
+              <div class="flex items-center gap-4">
                 <CryptoIcon :symbol="asset.symbol" size="md" />
                 <div>
-                  <div class="font-semibold text-text-primary text-sm">{{ asset.symbol.split('/')[0] }}</div>
-                  <div class="text-xs text-text-tertiary">{{ asset.name }}</div>
+                  <div class="font-bold text-text-primary text-base">{{ asset.symbol.split('/')[0] }}</div>
+                  <div class="text-xs text-text-muted font-medium">{{ asset.name }}</div>
                 </div>
               </div>
             </td>
-            <td class="py-4 px-4 text-right">
-              <span class="font-mono font-semibold text-text-primary tabular-nums text-base">
+            <td class="py-5 px-5 text-right">
+              <span class="font-mono font-black text-text-primary tabular-nums text-lg">
                 {{ formatCurrency(asset.price, getDecimals(asset.symbol)) }}
               </span>
             </td>
-            <td class="py-4 px-4 text-right">
-              <div class="flex items-center justify-end gap-1.5">
-                <span 
-                  class="font-bold text-sm tabular-nums"
-                  :class="getPriceColorClass(asset.change24h)"
+            <td class="py-5 px-5 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <div 
+                  class="px-3 py-1.5 rounded-lg font-bold text-sm tabular-nums"
+                  :class="asset.change24h >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'"
                 >
                   {{ getPriceArrow(asset.change24h) }} {{ formatPercentage(asset.change24h) }}
-                </span>
+                </div>
               </div>
             </td>
-            <td class="py-4 px-4 text-right">
-              <div class="text-sm text-text-secondary font-mono tabular-nums">
-                {{ formatLargeNumber(asset.volume24h) }}
-              </div>
-              <div class="text-xs text-text-muted">
+            <td class="py-5 px-5 text-right">
+              <div class="text-base text-text-primary font-bold tabular-nums">
                 ${{ formatLargeNumber(asset.volume24h) }}
+              </div>
+              <div class="text-xs text-text-muted font-medium mt-0.5">
+                {{ formatLargeNumber(asset.volume24h) }}
               </div>
             </td>
             <td class="py-4 px-4 text-right">

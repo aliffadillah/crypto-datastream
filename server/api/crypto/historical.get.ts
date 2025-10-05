@@ -1,3 +1,5 @@
+import { fetchBinance } from '../../utils/binanceClient'
+
 interface CandleData {
   timestamp: number
   open: number
@@ -87,16 +89,16 @@ export default defineEventHandler(async (event): Promise<CandleData[]> => {
       })
     }
     
-    // Build URL dengan parameter yang sudah divalidasi
-    let url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
-    if (startTime) url += `&startTime=${startTime}`
-    if (endTime) url += `&endTime=${endTime}`
+    // Build path dengan parameter yang sudah divalidasi
+    let path = `/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+    if (startTime) path += `&startTime=${startTime}`
+    if (endTime) path += `&endTime=${endTime}`
     
-    console.log(`Fetching historical data: ${url}`)
+    console.log(`📊 Fetching historical data: ${path}`)
     
-    // Fetch dari Binance API menggunakan ofetch (sudah built-in di Nuxt 3)
-    // Koneksi HTTPS aman tanpa menonaktifkan verifikasi TLS
-    const data = await $fetch(url, {
+    // Fetch menggunakan fallback strategy untuk bypass ISP blocking
+    // Koneksi HTTPS aman dengan support proxy otomatis
+    const data = await fetchBinance<BinanceKline[]>(path, {
       retry: 2,
       timeout: 10000,
     })

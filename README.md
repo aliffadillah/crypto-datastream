@@ -51,6 +51,48 @@ npm run dev
 npm run build
 ```
 
+## 🛡️ ISP Blocking Solution (Indonesia)
+
+**Masalah:** Binance API diblokir oleh ISP di Indonesia
+
+**Solusi:** Proyek ini sudah dilengkapi dengan **automatic fallback strategy**:
+
+### Quick Setup (3 options):
+
+**1. SSH Tunnel (Recommended untuk Development):**
+```powershell
+# Terminal 1: Buat tunnel
+ssh -D 1080 -C -N user@your-server.com
+
+# Terminal 2: Run dengan proxy
+$env:USE_PROXY="true"; $env:HTTPS_PROXY="socks5://127.0.0.1:1080"; npm run dev
+```
+
+**2. Deploy ke Cloud (Recommended untuk Production):**
+```bash
+# Deploy ke Vercel (GRATIS & AUTO WORKS)
+npm i -g vercel
+vercel
+```
+
+**3. Premium Proxy (Stable):**
+```bash
+# Edit .env
+USE_PROXY=true
+HTTPS_PROXY=http://user:pass@proxy.smartproxy.com:7000
+```
+
+📖 **Dokumentasi Lengkap:**
+- **QUICK_PROXY_SETUP.md** - Setup cepat 3 menit
+- **PROXY_SETUP_GUIDE.md** - Panduan lengkap semua opsi
+
+### Features:
+- ✅ Auto-detect proxy dari environment
+- ✅ Fallback ke alternative endpoints
+- ✅ Support SOCKS5, HTTP, HTTPS proxy
+- ✅ Multiple retry strategies
+- ✅ Detailed logging untuk debugging
+
 ## 🌐 API Integration
 
 This application uses **Binance Public API** (no API key required):
@@ -63,6 +105,8 @@ This application uses **Binance Public API** (no API key required):
 - ✅ Support for historical data with timestamps
 - ✅ Multiple interval options
 - ✅ Up to 1000 data points per request
+- ✅ **ISP blocking bypass** with proxy support
+- ✅ **Auto fallback** ke alternative endpoints
 
 ## 📱 Pages
 

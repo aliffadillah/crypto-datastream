@@ -51,21 +51,26 @@
       </div>
 
       <!-- Crypto Selector -->
-      <div class="card mb-6 animate-slide-up">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-display font-bold text-text-primary">Select Cryptocurrency</h2>
-          <div class="text-sm text-text-tertiary">
+      <div class="bg-white border border-gray-200 rounded-xl p-8 mb-6 animate-slide-up shadow-sm">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Cryptocurrency</h2>
+            <p class="text-sm text-gray-600">Choose a cryptocurrency to view real-time market data</p>
+          </div>
+          <div class="text-sm">
             <span 
-              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg"
-              :class="isStreamActive ? 'bg-success/10' : 'bg-text-muted/10'"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border"
+              :class="isStreamActive 
+                ? 'bg-success/10 border-success/20' 
+                : 'bg-gray-100 border-gray-200'"
             >
               <div 
                 class="w-2 h-2 rounded-full"
-                :class="isStreamActive ? 'bg-success animate-pulse' : 'bg-text-muted'"
+                :class="isStreamActive ? 'bg-success animate-pulse' : 'bg-gray-400'"
               ></div>
               <span 
                 class="font-semibold"
-                :class="isStreamActive ? 'text-success' : 'text-text-muted'"
+                :class="isStreamActive ? 'text-success' : 'text-gray-500'"
               >
                 {{ isStreamActive ? 'Live Streaming' : 'Stream Inactive' }}
               </span>
@@ -74,9 +79,9 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="isLoading && assets.length === 0" class="text-center py-12">
-          <div class="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p class="text-text-tertiary">Loading cryptocurrencies...</p>
+        <div v-if="isLoading && assets.length === 0" class="text-center py-16">
+          <div class="inline-block w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p class="text-gray-500 font-medium">Loading cryptocurrencies...</p>
         </div>
 
         <!-- Crypto Cards Grid -->
@@ -85,43 +90,45 @@
             v-for="asset in assets"
             :key="asset.symbol"
             @click="selectCrypto(asset.symbol)"
-            class="relative p-5 rounded-2xl border-2 transition-all duration-200 hover:shadow-lg"
+            class="relative p-6 rounded-xl border-2 transition-all duration-200 text-left hover:shadow-md"
             :class="selectedCrypto === asset.symbol 
-              ? 'border-primary bg-primary/5 shadow-md' 
-              : 'border-finance-border bg-finance-surface hover:border-finance-divider'"
+              ? 'border-primary bg-primary/5 shadow-sm' 
+              : 'border-gray-200 bg-white hover:border-gray-300'"
           >
             <!-- Selected Indicator -->
             <div 
               v-if="selectedCrypto === asset.symbol"
-              class="absolute top-3 right-3"
+              class="absolute top-4 right-4"
             >
-              <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+              <div class="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
             </div>
 
-            <div class="flex items-center gap-4 mb-3">
+            <div class="flex items-center gap-3 mb-4">
               <CryptoIcon :symbol="asset.symbol" size="lg" />
-              <div class="text-left">
-                <div class="font-display font-bold text-lg text-text-primary">{{ asset.symbol.split('/')[0] }}</div>
-                <div class="text-xs text-text-tertiary">{{ asset.name }}</div>
+              <div>
+                <div class="font-bold text-lg text-gray-900">{{ asset.symbol.split('/')[0] }}</div>
+                <div class="text-xs text-gray-500">{{ asset.name }}</div>
               </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2.5">
               <div class="flex items-baseline justify-between">
-                <span class="text-xs text-text-tertiary">Price</span>
-                <span class="font-mono font-bold text-text-primary tabular-nums">
+                <span class="text-xs font-medium text-gray-500">Price</span>
+                <span class="font-mono font-bold text-gray-900 tabular-nums">
                   {{ formatCurrency(asset.price, getDecimals(asset.symbol)) }}
                 </span>
               </div>
               <div class="flex items-baseline justify-between">
-                <span class="text-xs text-text-tertiary">24h Change</span>
+                <span class="text-xs font-medium text-gray-500">24h Change</span>
                 <span 
-                  class="font-bold text-sm tabular-nums"
-                  :class="asset.change24h >= 0 ? 'text-success' : 'text-danger'"
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-xs tabular-nums"
+                  :class="asset.change24h >= 0 
+                    ? 'bg-success/10 text-success' 
+                    : 'bg-danger/10 text-danger'"
                 >
                   {{ asset.change24h >= 0 ? '↑' : '↓' }} {{ formatPercentage(asset.change24h) }}
                 </span>
