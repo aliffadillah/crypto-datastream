@@ -1,11 +1,7 @@
-{{
-
-  "buildCommand": "npm run build",  "version": 2,
-
-  "outputDirectory": ".output/public"  "builds": [
-
-}    {
-
+{
+  "version": 2,
+  "builds": [
+    {
       "src": "nuxt.config.ts",
       "use": "@vercel/static-build",
       "config": {
@@ -22,8 +18,5 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ],
-  "env": {
-    "NUXT_PUBLIC_CRYPTO_API_PROVIDER": "binance"
-  }
+  ]
 }
