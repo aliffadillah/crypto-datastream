@@ -4,9 +4,9 @@
     <HeaderSimple />
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8 max-w-7xl">
+    <main class="container mx-auto px-4 md:px-6 py-4 md:py-8 max-w-7xl">
       <!-- Error Alert -->
-      <div v-if="hasError" class="mb-6 p-6 bg-danger/10 border-2 border-danger/20 rounded-xl animate-fade-in">
+      <div v-if="hasError" class="mb-4 md:mb-6 p-4 md:p-6 bg-danger/10 border-2 border-danger/20 rounded-xl animate-fade-in">
         <div class="flex items-start gap-4">
           <div class="w-10 h-10 bg-danger/20 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-6 h-6 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,21 +34,21 @@
       </div>
 
       <!-- Page Title & Description -->
-      <div class="mb-8 animate-fade-in">
-        <div class="flex items-center justify-between mb-4">
+      <div class="mb-6 md:mb-8 animate-fade-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h1 class="text-3xl font-display font-bold text-text-primary mb-2">Data Stream</h1>
-            <p class="text-text-tertiary">Real-time cryptocurrency market data with live updates every 5 seconds</p>
+            <h1 class="text-2xl md:text-3xl font-display font-bold text-text-primary mb-1 md:mb-2">Data Stream</h1>
+            <p class="text-sm md:text-base text-text-tertiary">Real-time crypto market updates every 5s</p>
           </div>
           
           <!-- Refresh Button -->
           <button 
             @click="refreshData"
-            class="btn-secondary"
+            class="btn-secondary text-sm md:text-base self-start sm:self-auto"
             :disabled="isRefreshing"
           >
             <svg 
-              class="w-4 h-4" 
+              class="w-3.5 h-3.5 md:w-4 md:h-4" 
               :class="{ 'animate-spin': isRefreshing }"
               fill="none" 
               stroke="currentColor" 
@@ -62,25 +62,25 @@
       </div>
 
       <!-- Crypto Selector -->
-      <div class="bg-white border border-gray-200 rounded-xl p-8 mb-6 animate-slide-up shadow-sm">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Cryptocurrency</h2>
-            <p class="text-sm text-gray-600">Choose a cryptocurrency to view real-time market data</p>
+      <div class="bg-white border border-gray-200 rounded-xl p-4 md:p-8 mb-4 md:mb-6 animate-slide-up shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-1 md:mb-2">Select Cryptocurrency</h2>
+            <p class="text-xs md:text-sm text-gray-600">Choose a crypto to view real-time data</p>
           </div>
-          <div class="text-sm">
+          <div class="text-xs md:text-sm">
             <span 
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border"
+              class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border"
               :class="isStreamActive 
                 ? 'bg-success/10 border-success/20' 
                 : 'bg-gray-100 border-gray-200'"
             >
               <div 
-                class="w-2 h-2 rounded-full"
+                class="w-2 h-2 rounded-full flex-shrink-0"
                 :class="isStreamActive ? 'bg-success animate-pulse' : 'bg-gray-400'"
               ></div>
               <span 
-                class="font-semibold"
+                class="font-semibold whitespace-nowrap"
                 :class="isStreamActive ? 'text-success' : 'text-gray-500'"
               >
                 {{ isStreamActive ? 'Live Streaming' : 'Stream Inactive' }}
@@ -90,18 +90,18 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="isLoading && assets.length === 0" class="text-center py-16">
-          <div class="inline-block w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p class="text-gray-500 font-medium">Loading cryptocurrencies...</p>
+        <div v-if="isLoading && assets.length === 0" class="text-center py-12 md:py-16">
+          <div class="inline-block w-8 h-8 md:w-10 md:h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3 md:mb-4"></div>
+          <p class="text-sm md:text-base text-gray-500 font-medium">Loading cryptocurrencies...</p>
         </div>
 
         <!-- Crypto Cards Grid -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div v-else class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
           <button
             v-for="asset in assets"
             :key="asset.symbol"
             @click="selectCrypto(asset.symbol)"
-            class="relative p-6 rounded-xl border-2 transition-all duration-200 text-left hover:shadow-md"
+            class="relative p-3 md:p-6 rounded-lg md:rounded-xl border-2 transition-all duration-200 text-left hover:shadow-md active:scale-95"
             :class="selectedCrypto === asset.symbol 
               ? 'border-primary bg-primary/5 shadow-sm' 
               : 'border-gray-200 bg-white hover:border-gray-300'"
@@ -109,34 +109,36 @@
             <!-- Selected Indicator -->
             <div 
               v-if="selectedCrypto === asset.symbol"
-              class="absolute top-4 right-4"
+              class="absolute top-2 right-2 md:top-4 md:right-4"
             >
-              <div class="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-4 h-4 md:w-5 md:h-5 bg-primary rounded-full flex items-center justify-center">
+                <svg class="w-2.5 h-2.5 md:w-3 md:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
             </div>
 
-            <div class="flex items-center gap-3 mb-4">
-              <CryptoIcon :symbol="asset.symbol" size="lg" />
-              <div>
-                <div class="font-bold text-lg text-gray-900">{{ asset.symbol.split('/')[0] }}</div>
-                <div class="text-xs text-gray-500">{{ asset.name }}</div>
+            <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+              <div class="w-6 h-6 md:w-10 md:h-10 flex-shrink-0">
+                <CryptoIcon :symbol="asset.symbol" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-sm md:text-lg text-gray-900 truncate">{{ asset.symbol.split('/')[0] }}</div>
+                <div class="text-[10px] md:text-xs text-gray-500 truncate">{{ asset.name }}</div>
               </div>
             </div>
 
-            <div class="space-y-2.5">
-              <div class="flex items-baseline justify-between">
-                <span class="text-xs font-medium text-gray-500">Price</span>
-                <span class="font-mono font-bold text-gray-900 tabular-nums">
+            <div class="space-y-1.5 md:space-y-2.5">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="text-[10px] md:text-xs font-medium text-gray-500">Price</span>
+                <span class="font-mono font-bold text-xs md:text-base text-gray-900 tabular-nums">
                   {{ formatCurrency(asset.price, getDecimals(asset.symbol)) }}
                 </span>
               </div>
-              <div class="flex items-baseline justify-between">
-                <span class="text-xs font-medium text-gray-500">24h Change</span>
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="text-[10px] md:text-xs font-medium text-gray-500 whitespace-nowrap">24h</span>
                 <span 
-                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-xs tabular-nums"
+                  class="inline-flex items-center gap-0.5 md:gap-1 px-1.5 py-0.5 md:px-2 rounded-md font-bold text-[10px] md:text-xs tabular-nums flex-shrink-0"
                   :class="asset.change24h >= 0 
                     ? 'bg-success/10 text-success' 
                     : 'bg-danger/10 text-danger'"
@@ -152,23 +154,24 @@
       <!-- Data Stream Section -->
       <div v-if="selectedCrypto" class="animate-fade-in">
         <!-- Tab Navigation -->
-        <div class="card mb-6">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h2 class="text-xl font-display font-bold text-text-primary mb-1">
+        <div class="card mb-4 md:mb-6 p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 md:mb-6">
+            <div class="min-w-0 flex-1">
+              <h2 class="text-lg md:text-xl font-display font-bold text-text-primary mb-1 truncate">
                 {{ selectedAsset?.name }} Data
               </h2>
-              <p class="text-sm text-text-tertiary">
-                View live stream or historical data • Last update: {{ timeAgo }}
+              <p class="text-xs md:text-sm text-text-tertiary">
+                <span class="hidden sm:inline">View live stream or historical data • </span>
+                <span class="sm:hidden">Last update: </span>{{ timeAgo }}
               </p>
             </div>
           </div>
 
           <!-- Tabs -->
-          <div class="flex gap-2 border-b border-finance-border">
+          <div class="flex gap-1 md:gap-2 border-b border-finance-border -mx-4 md:-mx-0 px-4 md:px-0 overflow-x-auto">
             <button
               @click="activeTab = 'live'"
-              class="px-6 py-3 font-medium transition-colors relative"
+              class="px-4 md:px-6 py-2 md:py-3 text-sm md:text-base font-medium transition-colors relative whitespace-nowrap flex-shrink-0"
               :class="activeTab === 'live' 
                 ? 'text-primary' 
                 : 'text-text-tertiary hover:text-text-secondary'"
@@ -181,7 +184,7 @@
             </button>
             <button
               @click="activeTab = 'historical'"
-              class="px-6 py-3 font-medium transition-colors relative"
+              class="px-4 md:px-6 py-2 md:py-3 text-sm md:text-base font-medium transition-colors relative whitespace-nowrap flex-shrink-0"
               :class="activeTab === 'historical' 
                 ? 'text-primary' 
                 : 'text-text-tertiary hover:text-text-secondary'"

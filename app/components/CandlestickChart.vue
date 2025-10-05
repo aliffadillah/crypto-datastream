@@ -1,31 +1,33 @@
 <template>
   <div class="card">
     <!-- Crypto Selector -->
-    <div class="mb-6 pb-4 border-b border-dark-border">
-      <h3 class="text-sm font-semibold text-dark-text-secondary mb-3">Select Cryptocurrency</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="mb-4 md:mb-6 pb-3 md:pb-4 border-b border-dark-border">
+      <h3 class="text-xs md:text-sm font-semibold text-dark-text-secondary mb-2 md:mb-3">Select Cryptocurrency</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
         <button
           v-for="asset in assets"
           :key="asset.symbol"
           @click="selectCrypto(asset.symbol)"
           :class="[
-            'p-3 rounded-lg border-2 transition-all text-left',
+            'p-2 md:p-3 rounded-lg border-2 transition-all text-left active:scale-95',
             selectedCryptoSymbol === asset.symbol
               ? 'border-primary bg-primary/10'
               : 'border-dark-border hover:border-primary/50 hover:bg-dark-bg'
           ]"
         >
-          <div class="flex items-center gap-2 mb-1">
-            <CryptoIcon :symbol="asset.symbol" class="w-6 h-6" />
-            <span class="font-semibold text-dark-text-primary text-sm">
+          <div class="flex items-center gap-1.5 md:gap-2 mb-1">
+            <div class="w-6 h-6 md:w-8 md:h-8 flex-shrink-0">
+              <CryptoIcon :symbol="asset.symbol" />
+            </div>
+            <span class="font-semibold text-dark-text-primary text-xs md:text-sm truncate">
               {{ asset.symbol.split('/')[0] }}
             </span>
           </div>
-          <div class="text-xs text-dark-text-secondary">
+          <div class="text-[10px] md:text-xs text-dark-text-secondary truncate">
             ${{ asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </div>
           <div :class="[
-            'text-xs font-medium',
+            'text-[10px] md:text-xs font-medium',
             asset.change24h >= 0 ? 'text-success' : 'text-danger'
           ]">
             {{ asset.change24h >= 0 ? '↑' : '↓' }} {{ Math.abs(asset.change24h).toFixed(2) }}%
@@ -34,21 +36,21 @@
       </div>
     </div>
 
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h2 class="text-lg font-semibold text-dark-text-primary">{{ selectedCryptoSymbol }} - Candlestick Chart</h2>
-        <p class="text-sm text-dark-text-secondary mt-1">5-minute interval • Interactive chart</p>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div class="min-w-0 flex-1">
+        <h2 class="text-base md:text-lg font-semibold text-dark-text-primary truncate">{{ selectedCryptoSymbol }} - Candlestick</h2>
+        <p class="text-xs md:text-sm text-dark-text-secondary mt-1">5-minute interval • Interactive</p>
       </div>
       
       <!-- Interval selector (future feature) -->
-      <div class="flex gap-2">
-        <button class="px-3 py-1 text-sm bg-primary text-white rounded-lg font-medium">
+      <div class="flex gap-1.5 md:gap-2 overflow-x-auto pb-1">
+        <button class="px-2.5 py-1 md:px-3 text-xs md:text-sm bg-primary text-white rounded-lg font-medium whitespace-nowrap flex-shrink-0">
           5M
         </button>
-        <button class="px-3 py-1 text-sm bg-dark-bg text-dark-text-secondary rounded-lg font-medium hover:bg-dark-border transition-colors">
+        <button class="px-2.5 py-1 md:px-3 text-xs md:text-sm bg-dark-bg text-dark-text-secondary rounded-lg font-medium hover:bg-dark-border transition-colors whitespace-nowrap flex-shrink-0">
           1H
         </button>
-        <button class="px-3 py-1 text-sm bg-dark-bg text-dark-text-secondary rounded-lg font-medium hover:bg-dark-border transition-colors">
+        <button class="px-2.5 py-1 md:px-3 text-xs md:text-sm bg-dark-bg text-dark-text-secondary rounded-lg font-medium hover:bg-dark-border transition-colors whitespace-nowrap flex-shrink-0">
           1D
         </button>
       </div>
@@ -124,6 +126,26 @@ const { assets } = useCryptoData()
 const selectedCryptoSymbol = ref('BTC/USD')
 const cryptoCandleData = ref<CandleData[]>([])
 const isLoadingChart = ref(false)
+
+// Responsive chart height
+const chartHeight = ref(400)
+
+const updateChartHeight = () => {
+  if (typeof window !== 'undefined') {
+    chartHeight.value = window.innerWidth < 768 ? 280 : 400
+  }
+}
+
+onMounted(() => {
+  updateChartHeight()
+  window.addEventListener('resize', updateChartHeight)
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', updateChartHeight)
+  }
+})
 
 // Mapping crypto symbols to CoinGecko IDs
 const symbolMapping: Record<string, string> = {

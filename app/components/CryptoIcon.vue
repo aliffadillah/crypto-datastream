@@ -1,5 +1,5 @@
 <template>
-  <div class="crypto-icon" :class="sizeClass">
+  <div class="crypto-icon w-full h-full">
     <img 
       :src="iconPath" 
       :alt="symbol"
@@ -18,16 +18,6 @@ const props = defineProps<{
 }>()
 
 const imageError = ref(false)
-
-const sizeClass = computed(() => {
-  const sizes = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10',
-    xl: 'w-12 h-12'
-  }
-  return sizes[props.size || 'md']
-})
 
 const iconPath = computed(() => {
   if (imageError.value) {

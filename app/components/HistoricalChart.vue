@@ -1,22 +1,22 @@
 <template>
   <div class="historical-chart">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h3 class="text-lg font-display font-bold text-text-primary">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div class="min-w-0 flex-1">
+        <h3 class="text-base md:text-lg font-display font-bold text-text-primary">
           Price Chart
         </h3>
-        <p class="text-sm text-text-tertiary">
-          {{ symbol }} Historical Price Movement
+        <p class="text-xs md:text-sm text-text-tertiary truncate">
+          {{ symbol }} Historical Price
         </p>
       </div>
 
       <!-- Chart Type Selector -->
-      <div class="flex gap-2">
+      <div class="flex gap-1 md:gap-2 overflow-x-auto pb-1">
         <button
           v-for="type in chartTypes"
           :key="type.value"
           @click="selectedChartType = type.value"
-          class="px-3 py-1.5 text-sm rounded-lg transition-colors"
+          class="px-2.5 py-1.5 md:px-3 text-xs md:text-sm rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
           :class="selectedChartType === type.value 
             ? 'bg-primary text-white' 
             : 'bg-finance-surface border border-finance-border text-text-secondary hover:border-primary'"
@@ -27,42 +27,42 @@
     </div>
 
     <!-- Chart Container -->
-    <div class="card p-4">
+    <div class="card p-2 md:p-4">
       <ClientOnly>
         <apexchart
           v-if="chartOptions && series.length > 0"
           type="candlestick"
           :options="chartOptions"
           :series="series"
-          height="450"
+          :height="chartHeight"
         />
         <div v-else class="text-center py-12">
-          <svg class="w-16 h-16 text-text-muted mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-12 h-12 md:w-16 md:h-16 text-text-muted mx-auto mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
           </svg>
-          <p class="text-text-tertiary">No chart data available</p>
+          <p class="text-sm md:text-base text-text-tertiary">No chart data available</p>
         </div>
       </ClientOnly>
     </div>
 
     <!-- Stats Summary -->
-    <div v-if="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-      <div class="card p-4">
-        <div class="text-xs text-text-muted mb-1">Highest Price</div>
-        <div class="text-lg font-bold text-success">{{ formatCurrency(stats.highest) }}</div>
+    <div v-if="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mt-3 md:mt-4">
+      <div class="card p-3 md:p-4">
+        <div class="text-[10px] md:text-xs text-text-muted mb-1">Highest Price</div>
+        <div class="text-sm md:text-lg font-bold text-success truncate">{{ formatCurrency(stats.highest) }}</div>
       </div>
-      <div class="card p-4">
-        <div class="text-xs text-text-muted mb-1">Lowest Price</div>
-        <div class="text-lg font-bold text-danger">{{ formatCurrency(stats.lowest) }}</div>
+      <div class="card p-3 md:p-4">
+        <div class="text-[10px] md:text-xs text-text-muted mb-1">Lowest Price</div>
+        <div class="text-sm md:text-lg font-bold text-danger truncate">{{ formatCurrency(stats.lowest) }}</div>
       </div>
-      <div class="card p-4">
-        <div class="text-xs text-text-muted mb-1">Average Price</div>
-        <div class="text-lg font-bold text-text-primary">{{ formatCurrency(stats.average) }}</div>
+      <div class="card p-3 md:p-4">
+        <div class="text-[10px] md:text-xs text-text-muted mb-1">Average Price</div>
+        <div class="text-sm md:text-lg font-bold text-text-primary truncate">{{ formatCurrency(stats.average) }}</div>
       </div>
-      <div class="card p-4">
-        <div class="text-xs text-text-muted mb-1">Total Change</div>
+      <div class="card p-3 md:p-4">
+        <div class="text-[10px] md:text-xs text-text-muted mb-1">Total Change</div>
         <div 
-          class="text-lg font-bold"
+          class="text-sm md:text-lg font-bold truncate"
           :class="stats.totalChange >= 0 ? 'text-success' : 'text-danger'"
         >
           {{ stats.totalChange >= 0 ? '+' : '' }}{{ formatPercentage(stats.totalChange) }}
@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import type { CandleData } from '~/types/crypto'
 import { formatCurrency, formatPercentage } from '~/utils/formatters'
 
@@ -89,6 +89,26 @@ const chartTypes = [
   { label: 'Line', value: 'line' as const },
   { label: 'Area', value: 'area' as const }
 ]
+
+// Responsive chart height
+const chartHeight = ref(450)
+
+const updateChartHeight = () => {
+  if (typeof window !== 'undefined') {
+    chartHeight.value = window.innerWidth < 768 ? 300 : 450
+  }
+}
+
+onMounted(() => {
+  updateChartHeight()
+  window.addEventListener('resize', updateChartHeight)
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', updateChartHeight)
+  }
+})
 
 // Prepare chart series
 const series = computed(() => {

@@ -22,28 +22,28 @@
 @layer components {
   /* Cards - Minimalist FinTech Style */
   .card {
-    @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm;
+    @apply bg-white border border-gray-200 rounded-xl p-4 md:p-6 shadow-sm;
   }
 
   .card-hover {
-    @apply hover:shadow-md hover:border-gray-300 transition-all duration-200;
+    @apply hover:shadow-md hover:border-gray-300 transition-all duration-200 active:scale-[0.99];
   }
 
   .stat-card {
-    @apply bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer;
+    @apply bg-white border border-gray-200 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.99];
   }
 
   /* Buttons - Minimalist FinTech Style */
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2;
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold px-4 py-2.5 md:px-6 md:py-3 rounded-lg transition-all duration-200 flex items-center gap-2 active:scale-95;
   }
 
   .btn-secondary {
-    @apply bg-gray-50 hover:bg-gray-100 text-gray-900 font-semibold px-6 py-3 rounded-lg border border-gray-200 transition-all duration-200 flex items-center gap-2 hover:border-gray-300;
+    @apply bg-gray-50 hover:bg-gray-100 text-gray-900 font-semibold px-4 py-2.5 md:px-6 md:py-3 rounded-lg border border-gray-200 transition-all duration-200 flex items-center gap-2 hover:border-gray-300 active:scale-95;
   }
 
   .btn-ghost {
-    @apply hover:bg-gray-50 text-gray-600 hover:text-gray-900 font-medium px-5 py-2.5 rounded-lg transition-all duration-200;
+    @apply hover:bg-gray-50 text-gray-600 hover:text-gray-900 font-medium px-3 py-2 md:px-5 md:py-2.5 rounded-lg transition-all duration-200 active:scale-95;
   }
 
   /* Table - Minimalist */
@@ -168,6 +168,30 @@
   background: #9CA3AF;
 }
 
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Selection */
 ::selection {
   background-color: rgba(124, 179, 66, 0.2);
@@ -197,6 +221,33 @@
 /* Clean Professional Text */
 .gradient-text {
   @apply text-gray-900 font-bold;
+}
+
+/* Mobile utility classes */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .tap-highlight-transparent {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /* Subtle Shimmer Effect */

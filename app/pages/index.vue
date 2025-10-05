@@ -4,9 +4,9 @@
     <HeaderSimple />
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8 max-w-[1800px]">
+    <main class="container mx-auto px-4 md:px-6 py-4 md:py-8 max-w-[1800px]">
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex items-center justify-center py-32">
+      <div v-if="isLoading" class="flex items-center justify-center py-16 md:py-32">
         <div class="text-center">
           <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
           <p class="mt-6 text-lg font-semibold text-text-secondary">Loading cryptocurrency data...</p>
@@ -71,20 +71,20 @@
       <!-- Main Content -->
       <template v-else>
         <!-- Hero Section with Key Metrics -->
-        <section class="mb-8 animate-slide-up">
-          <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-            <div class="flex items-center justify-between mb-8">
+        <section class="mb-6 md:mb-8 animate-slide-up">
+          <div class="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
               <div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
                   Market Overview
                 </h2>
-                <p class="text-gray-600">Real-time cryptocurrency market intelligence and analytics</p>
+                <p class="text-sm md:text-base text-gray-600">Real-time crypto market intelligence</p>
               </div>
               <div class="flex items-center gap-3">
-                <div class="px-4 py-2 bg-success/10 rounded-lg border border-success/20">
+                <div class="px-3 py-1.5 md:px-4 md:py-2 bg-success/10 rounded-lg border border-success/20">
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                    <span class="text-xs font-semibold text-success uppercase tracking-wide">LIVE DATA</span>
+                    <span class="text-[10px] md:text-xs font-semibold text-success uppercase tracking-wide">LIVE DATA</span>
                   </div>
                 </div>
               </div>
@@ -94,9 +94,9 @@
         </section>
 
         <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-8">
           <!-- Main Content Area -->
-          <div class="xl:col-span-8 space-y-8">
+          <div class="xl:col-span-8 space-y-4 md:space-y-8">
             <!-- Market Overview Table -->
             <section id="market" class="animate-fade-in" style="animation-delay: 0.1s">
               <CryptoTickerTable />
@@ -110,68 +110,68 @@
 
           <!-- Sidebar -->
           <aside class="xl:col-span-4">
-            <div class="sticky top-28 space-y-6">
+            <div class="xl:sticky xl:top-28 space-y-4 md:space-y-6">
               <!-- Market Stats Card -->
-              <div class="bg-white border border-gray-200 rounded-xl p-6 animate-fade-in shadow-sm" style="animation-delay: 0.15s">
-                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="bg-white border border-gray-200 rounded-xl p-4 md:p-6 animate-fade-in shadow-sm" style="animation-delay: 0.15s">
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                  <div class="w-7 h-7 md:w-8 md:h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                   </div>
                   Market Statistics
                 </h3>
-                <div class="space-y-4">
-                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="space-y-3 md:space-y-4">
+                  <div class="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm text-gray-600 font-medium">Total Market Cap</span>
-                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span class="text-xs md:text-sm text-gray-600 font-medium">Total Market Cap</span>
+                      <svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 tabular-nums">$1.71T</p>
-                    <div class="flex items-center gap-1 mt-2">
-                      <span class="text-success text-sm font-semibold">↑ 1.49%</span>
-                      <span class="text-xs text-gray-500">24h</span>
+                    <p class="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">$1.71T</p>
+                    <div class="flex items-center gap-1 mt-1.5 md:mt-2">
+                      <span class="text-success text-xs md:text-sm font-semibold">↑ 1.49%</span>
+                      <span class="text-[10px] md:text-xs text-gray-500">24h</span>
                     </div>
                   </div>
 
-                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div class="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm text-gray-600 font-medium">24h Trading Volume</span>
-                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span class="text-xs md:text-sm text-gray-600 font-medium">24h Trading Volume</span>
+                      <svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                       </svg>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 tabular-nums">$84.3B</p>
-                    <div class="flex items-center gap-1 mt-2">
-                      <span class="text-danger text-sm font-semibold">↓ 0.82%</span>
-                      <span class="text-xs text-gray-500">24h</span>
+                    <p class="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">$84.3B</p>
+                    <div class="flex items-center gap-1 mt-1.5 md:mt-2">
+                      <span class="text-danger text-xs md:text-sm font-semibold">↓ 0.82%</span>
+                      <span class="text-[10px] md:text-xs text-gray-500">24h</span>
                     </div>
                   </div>
 
-                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div class="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm text-gray-600 font-medium">BTC Dominance</span>
-                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span class="text-xs md:text-sm text-gray-600 font-medium">BTC Dominance</span>
+                      <svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 tabular-nums">48.5%</p>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <p class="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">48.5%</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2.5 md:mt-3">
                       <div class="bg-primary h-2 rounded-full transition-all" style="width: 48.5%"></div>
                     </div>
                   </div>
 
-                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div class="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm text-gray-600 font-medium">Fear & Greed Index</span>
-                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span class="text-xs md:text-sm text-gray-600 font-medium">Fear & Greed Index</span>
+                      <svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <p class="text-2xl font-bold text-success tabular-nums">62</p>
-                    <p class="text-sm font-semibold text-success mt-1">Greed</p>
+                    <p class="text-xl md:text-2xl font-bold text-success tabular-nums">62</p>
+                    <p class="text-xs md:text-sm font-semibold text-success mt-1">Greed</p>
                   </div>
                 </div>
               </div>

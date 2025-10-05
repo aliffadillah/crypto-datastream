@@ -1,37 +1,101 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm animate-fade-in">
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm animate-fade-in overflow-hidden">
+    <!-- Header Section -->
+    <div class="p-4 md:p-6 border-b border-gray-200">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title Section -->
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900">
+              Live Market Prices
+            </h2>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900">
-            Live Market Prices
-          </h2>
+          <p class="text-xs md:text-sm text-gray-600">
+            Market cap 
+            <span class="font-semibold text-gray-900">$1.71T</span>, 
+            <span class="text-success font-semibold">↑ 1.49%</span>
+          </p>
         </div>
-        <p class="text-sm text-gray-600 ml-13">
-          The global crypto market cap is 
-          <span class="font-semibold text-gray-900">$1.71T</span>, 
-          a <span class="text-success font-semibold">↑ 1.49%</span> increase over the last day
-        </p>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
-          <span v-if="lastUpdate">Updated {{ timeAgo }}</span>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 md:gap-4">
+          <div class="text-xs text-gray-500 font-medium bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+            <span v-if="lastUpdate" class="hidden sm:inline">Updated {{ timeAgo }}</span>
+            <span v-if="lastUpdate" class="sm:hidden">{{ timeAgo }}</span>
+          </div>
+          <button class="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-semibold text-gray-900 border border-gray-200 hover:border-gray-300 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>Statistics</span>
+          </button>
         </div>
-        <button class="flex items-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-semibold text-gray-900 border border-gray-200 hover:border-gray-300 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <span>Statistics</span>
-        </button>
       </div>
     </div>
 
-    <div class="overflow-x-auto -mx-6 px-6">
+    <!-- Mobile Card View -->
+    <div class="block md:hidden">
+      <div class="divide-y divide-gray-100">
+        <div
+          v-for="(asset, index) in assets"
+          :key="asset.symbol"
+          class="p-4 hover:bg-gray-50 transition-all duration-150 active:bg-gray-100"
+          :class="getPriceFlashClass(asset)"
+        >
+          <!-- Top Row: Icon, Name, Price -->
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                {{ index + 1 }}
+              </div>
+              <div class="w-8 h-8 flex-shrink-0">
+                <CryptoIcon :symbol="asset.symbol" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-gray-900 text-sm truncate">{{ asset.symbol.split('/')[0] }}</div>
+                <div class="text-[10px] text-gray-500 font-medium truncate">{{ asset.name }}</div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="font-mono font-bold text-gray-900 text-base tabular-nums">
+                {{ formatCurrency(asset.price, getDecimals(asset.symbol)) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Change, Volume, Chart -->
+          <div class="flex items-center gap-2">
+            <!-- Change Badge -->
+            <div 
+              class="px-2 py-1 rounded-md font-bold text-xs tabular-nums flex-shrink-0"
+              :class="asset.change24h >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'"
+            >
+              {{ getPriceArrow(asset.change24h) }} {{ formatPercentage(asset.change24h) }}
+            </div>
+
+            <!-- Volume -->
+            <div class="text-[11px] text-gray-500 flex-shrink-0">
+              Vol: <span class="font-semibold text-gray-700">${{ formatLargeNumber(asset.volume24h) }}</span>
+            </div>
+
+            <!-- Mini Chart -->
+            <div class="flex-1 flex justify-end">
+              <div class="w-16 h-8">
+                <MiniSparkline :symbol="asset.symbol" :change="asset.change24h" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full">
         <thead>
           <tr class="border-b-2 border-finance-border">
@@ -57,7 +121,9 @@
             </td>
             <td class="py-5 px-5">
               <div class="flex items-center gap-4">
-                <CryptoIcon :symbol="asset.symbol" size="md" />
+                <div class="w-10 h-10 flex-shrink-0">
+                  <CryptoIcon :symbol="asset.symbol" />
+                </div>
                 <div>
                   <div class="font-bold text-text-primary text-base">{{ asset.symbol.split('/')[0] }}</div>
                   <div class="text-xs text-text-muted font-medium">{{ asset.name }}</div>
