@@ -1,0 +1,29 @@
+{{
+
+  "buildCommand": "npm run build",  "version": 2,
+
+  "outputDirectory": ".output/public"  "builds": [
+
+}    {
+
+      "src": "nuxt.config.ts",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": ".output/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/.*",
+      "dest": "/api/index"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "NUXT_PUBLIC_CRYPTO_API_PROVIDER": "binance"
+  }
+}
