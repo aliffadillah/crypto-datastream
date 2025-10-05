@@ -40,7 +40,14 @@ const iconPath = computed(() => {
     'BTC': '/bitcoin.png',
     'ETH': '/ethereum.png',
     'SOL': '/solana.png',
-    'XRP': '/xrp.png'
+    'XRP': '/xrp.png',
+    'BNB': '/bnb.png',
+    'ADA': '/cardano.png',
+    'LINK': '/chainlink.png',
+    'DOGE': '/dogecoin.png',
+    'USDT': '/tether.png',
+    'TRX': '/tron.png',
+    'USD': '/usd.png'
   } as const
   
   return iconMap[symbol as keyof typeof iconMap] || '/favicon.ico'

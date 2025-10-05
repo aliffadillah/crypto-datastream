@@ -91,7 +91,17 @@ export function useHistoricalData() {
       'XRP': 'XRPUSDT',
       'BTC': 'BTCUSDT',
       'ETH': 'ETHUSDT',
-      'SOL': 'SOLUSDT'
+      'SOL': 'SOLUSDT',
+      'BNB': 'BNBUSDT',
+      'CARDANO': 'ADAUSDT',
+      'ADA': 'ADAUSDT',
+      'CHAINLINK': 'LINKUSDT',
+      'LINK': 'LINKUSDT',
+      'DOGECOIN': 'DOGEUSDT',
+      'DOGE': 'DOGEUSDT',
+      // USDTUSDT tidak valid, dihapus
+      'TRON': 'TRXUSDT',
+      'TRX': 'TRXUSDT'
     }
     
     const upperSymbol = symbol.toUpperCase()

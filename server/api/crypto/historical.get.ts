@@ -1,5 +1,3 @@
-import https from 'https'
-
 interface CandleData {
   timestamp: number
   open: number
@@ -11,24 +9,93 @@ interface CandleData {
 
 type BinanceKline = [number, string, string, string, string, string]
 
-// Set environment variable to bypass SSL verification (development only)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+/**
+ * Konversi nama koin atau simbol ke format ticker Binance yang valid
+ * Contoh: 'bitcoin' -> 'BTCUSDT', 'ethereum' -> 'ETHUSDT', 'BTC' -> 'BTCUSDT'
+ */
+function normalizeSymbol(input: string): string {
+  // Mapping nama koin ke ticker
+  const symbolMap: Record<string, string> = {
+    'bitcoin': 'BTC',
+    'ethereum': 'ETH',
+    'solana': 'SOL',
+    'ripple': 'XRP',
+    'xrp': 'XRP',
+    'bnb': 'BNB',
+    'binancecoin': 'BNB',
+    'cardano': 'ADA',
+    'chainlink': 'LINK',
+    'dogecoin': 'DOGE',
+    'tron': 'TRX',
+  }
+  
+  // Hapus spasi dan ubah ke lowercase untuk pencocokan
+  const normalized = input.toLowerCase().trim()
+  
+  // Jika input adalah nama koin, konversi ke ticker
+  if (symbolMap[normalized]) {
+    return symbolMap[normalized] + 'USDT'
+  }
+  
+  // Jika sudah format ticker tapi lowercase (misal: 'btc'), uppercase-kan
+  const upperInput = input.toUpperCase()
+  
+  // Jika sudah mengandung USDT, pastikan format benar
+  if (upperInput.includes('USDT')) {
+    // Hapus USDT kemudian tambahkan lagi untuk normalisasi
+    const ticker = upperInput.replace(/USDT/gi, '')
+    return ticker + 'USDT'
+  }
+  
+  // Jika hanya ticker (misal: 'BTC'), tambahkan USDT
+  if (upperInput.length >= 2 && upperInput.length <= 5 && !upperInput.includes('USDT')) {
+    return upperInput + 'USDT'
+  }
+  
+  // Default: kembalikan input yang sudah di-uppercase
+  return upperInput
+}
 
 export default defineEventHandler(async (event): Promise<CandleData[]> => {
   try {
     const query = getQuery(event)
-    const symbol = (query.symbol as string) || 'BTCUSDT'
+    const rawSymbol = (query.symbol as string) || 'BTCUSDT'
+    
+    // Normalisasi simbol agar sesuai format Binance
+    const symbol = normalizeSymbol(rawSymbol)
     const interval = (query.interval as string) || '5m'
     const limit = parseInt((query.limit as string) || '60')
     const startTime = query.startTime ? parseInt(query.startTime as string) : undefined
     const endTime = query.endTime ? parseInt(query.endTime as string) : undefined
     
-    // Build URL with parameters
+    // Validasi interval yang didukung Binance
+    const validIntervals = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
+    if (!validIntervals.includes(interval)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid interval',
+        message: `Interval harus salah satu dari: ${validIntervals.join(', ')}`
+      })
+    }
+    
+    // Validasi limit
+    if (limit < 1 || limit > 1000) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid limit',
+        message: 'Limit harus antara 1 dan 1000'
+      })
+    }
+    
+    // Build URL dengan parameter yang sudah divalidasi
     let url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
     if (startTime) url += `&startTime=${startTime}`
     if (endTime) url += `&endTime=${endTime}`
     
-    // Fetch from Binance API only
+    console.log(`Fetching historical data: ${url}`)
+    
+    // Fetch dari Binance API menggunakan ofetch (sudah built-in di Nuxt 3)
+    // Koneksi HTTPS aman tanpa menonaktifkan verifikasi TLS
     const data = await $fetch(url, {
       retry: 2,
       timeout: 10000,
@@ -55,6 +122,16 @@ export default defineEventHandler(async (event): Promise<CandleData[]> => {
     }))
   } catch (error: any) {
     console.error('Error fetching historical data:', error)
+    
+    // Handle error 400 dengan pesan yang lebih deskriptif
+    if (error.statusCode === 400 || error.status === 400) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid Request',
+        message: `Format simbol atau parameter tidak valid. Pastikan menggunakan format seperti BTCUSDT, ETHUSDT, dll. Error: ${error.message}`
+      })
+    }
+    
     throw createError({
       statusCode: 500,
       statusMessage: 'Terdapat Kesalahan pada API Binance',
@@ -62,3 +139,32 @@ export default defineEventHandler(async (event): Promise<CandleData[]> => {
     })
   }
 })
+
+/*
+ * CONTOH PENGGUNAAN OFETCH DI NUXT 3 (Client-side atau Server-side):
+ * 
+ * // Import ofetch (opsional, karena $fetch sudah tersedia)
+ * import { ofetch } from 'ofetch'
+ * 
+ * // Contoh fetch data historis dengan simbol yang benar
+ * const historicalData = await ofetch('/api/crypto/historical', {
+ *   query: {
+ *     symbol: 'BTCUSDT',  // Atau 'bitcoin', akan otomatis dinormalisasi
+ *     interval: '5m',      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
+ *     limit: 60            // Maksimal 1000
+ *   }
+ * })
+ * 
+ * // Contoh dengan startTime dan endTime
+ * const customData = await ofetch('/api/crypto/historical', {
+ *   query: {
+ *     symbol: 'ETHUSDT',
+ *     interval: '1h',
+ *     limit: 100,
+ *     startTime: Date.now() - 7 * 24 * 60 * 60 * 1000, // 7 hari yang lalu
+ *     endTime: Date.now()
+ *   }
+ * })
+ * 
+ * // Koneksi HTTPS tetap aman tanpa menonaktifkan verifikasi TLS
+ */

@@ -19,13 +19,21 @@ interface CryptoAsset {
   lastUpdate: Date
 }
 
-// Set environment variable to bypass SSL verification (development only)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
 
 export default defineEventHandler(async (event): Promise<CryptoAsset[]> => {
   try {
-    // Fetch from Binance API only
-    const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT']
+    const symbols = [
+      'BTCUSDT', 
+      'ETHUSDT', 
+      'SOLUSDT', 
+      'XRPUSDT',
+      'BNBUSDT',
+      'ADAUSDT',
+      'LINKUSDT',
+      'DOGEUSDT',
+      'TRXUSDT'
+    ]
     
     const promises: Promise<CryptoAsset>[] = symbols.map(async (symbol): Promise<CryptoAsset> => {
       const tickerResponse = await $fetch(
@@ -75,7 +83,13 @@ function getNameFromSymbol(symbol: string): string {
     'BTCUSDT': 'Bitcoin',
     'ETHUSDT': 'Ethereum',
     'SOLUSDT': 'Solana',
-    'XRPUSDT': 'Ripple'
+    'XRPUSDT': 'Ripple',
+    'BNBUSDT': 'BNB',
+    'ADAUSDT': 'Cardano',
+    'LINKUSDT': 'Chainlink',
+    'DOGEUSDT': 'Dogecoin',
+  // 'USDTUSDT': 'Tether', // Dihapus karena bukan simbol valid
+    'TRXUSDT': 'Tron'
   }
   return names[symbol] || symbol
 }
