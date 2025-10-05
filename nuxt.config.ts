@@ -37,7 +37,11 @@ export default defineNuxtConfig({
 
   // Production optimizations
   nitro: {
-    preset: 'node-server',
+    preset: 'static',
+    output: {
+      dir: 'dist',
+      publicDir: 'dist'
+    },
     compressPublicAssets: true,
     // Add CORS headers for API routes
     routeRules: {
@@ -49,6 +53,10 @@ export default defineNuxtConfig({
           'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         }
       }
+    },
+    prerender: {
+      crawlLinks: true,
+      routes: ['/', '/stream']
     }
   },
 
