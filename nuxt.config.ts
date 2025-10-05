@@ -31,7 +31,12 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // Using Binance API only (no API key required)
+      // CoinGecko API Keys (3 keys for rotation)
+      coingeckoApiKey1: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_1 || '',
+      coingeckoApiKey2: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_2 || '',
+      coingeckoApiKey3: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_3 || '',
+      // API Provider selection
+      cryptoApiProvider: process.env.NUXT_PUBLIC_CRYPTO_API_PROVIDER || 'coingecko'
     }
   },
 

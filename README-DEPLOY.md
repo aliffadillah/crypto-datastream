@@ -36,15 +36,18 @@ Vercel akan otomatis detect Nuxt.js. Pastikan settings berikut:
 **Output Directory:** `.output/public`  
 **Install Command:** `npm install`
 
-#### 4. Environment Variables (Optional)
+#### 4. Environment Variables (REQUIRED)
 
 Klik **"Environment Variables"** dan tambahkan:
 
 ```
-NUXT_PUBLIC_CRYPTO_API_PROVIDER=binance
+NUXT_PUBLIC_CRYPTO_API_PROVIDER=coingecko
+NUXT_PUBLIC_COINGECKO_API_KEY_1=your_api_key_1
+NUXT_PUBLIC_COINGECKO_API_KEY_2=your_api_key_2
+NUXT_PUBLIC_COINGECKO_API_KEY_3=your_api_key_3
 ```
 
-> **Note:** Untuk Binance API, tidak perlu API key karena menggunakan public data.
+> **Note:** Anda memerlukan 3 CoinGecko API keys. Lihat [COINGECKO_SETUP.md](./COINGECKO_SETUP.md) untuk panduan.
 
 #### 5. Deploy
 
@@ -88,13 +91,25 @@ vercel --prod
 
 | Key | Value | Environment |
 |-----|-------|-------------|
-| `NUXT_PUBLIC_CRYPTO_API_PROVIDER` | `binance` | Production, Preview, Development |
+| `NUXT_PUBLIC_CRYPTO_API_PROVIDER` | `coingecko` | Production, Preview, Development |
+| `NUXT_PUBLIC_COINGECKO_API_KEY_1` | `your_key_1` | Production, Preview, Development |
+| `NUXT_PUBLIC_COINGECKO_API_KEY_2` | `your_key_2` | Production, Preview, Development |
+| `NUXT_PUBLIC_COINGECKO_API_KEY_3` | `your_key_3` | Production, Preview, Development |
 
 ### Via CLI:
 
 ```bash
 vercel env add NUXT_PUBLIC_CRYPTO_API_PROVIDER production
-# Enter value: binance
+# Enter value: coingecko
+
+vercel env add NUXT_PUBLIC_COINGECKO_API_KEY_1 production
+# Enter value: your_key_1
+
+vercel env add NUXT_PUBLIC_COINGECKO_API_KEY_2 production
+# Enter value: your_key_2
+
+vercel env add NUXT_PUBLIC_COINGECKO_API_KEY_3 production
+# Enter value: your_key_3
 ```
 
 ---
@@ -157,17 +172,13 @@ Vercel akan:
 vercel --force
 ```
 
-### Error: API Blocked di Vercel
+### Error: API Key Not Configured
 
-Jika Binance API di-block oleh region Vercel:
+Jika muncul error "Tidak bisa mendapatkan data karena API Key belum diset":
 
-1. **Gunakan Proxy** (update di Environment Variables):
-```
-USE_PROXY=true
-HTTPS_PROXY=your-proxy-url
-```
-
-2. **Atau gunakan Edge Functions** (lihat dokumentasi Vercel Edge Functions)
+1. **Pastikan Environment Variables sudah diset** di Vercel Dashboard
+2. **Redeploy** setelah menambahkan environment variables
+3. **Verify** API keys valid di [CoinGecko Dashboard](https://www.coingecko.com/en/developers/dashboard)
 
 ### Error: 500 Internal Server Error
 

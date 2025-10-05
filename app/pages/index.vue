@@ -16,14 +16,49 @@
 
       <!-- Error State -->
       <div v-else-if="apiError" class="flex items-center justify-center py-32">
-        <div class="text-center max-w-md">
+        <div class="text-center max-w-2xl mx-auto">
           <div class="w-20 h-20 bg-danger/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 class="text-2xl font-display font-bold text-text-primary mb-3">Failed to Load Data</h2>
-          <p class="text-text-secondary mb-8">{{ apiError }}</p>
+          <h2 class="text-3xl font-display font-bold text-text-primary mb-4">Tidak Bisa Mendapatkan Data</h2>
+          <p class="text-lg text-text-secondary mb-6 leading-relaxed">{{ apiError }}</p>
+          
+          <!-- Instructions for API Key Setup -->
+          <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 mb-8 text-left">
+            <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Cara Mengaktifkan API Key:
+            </h3>
+            <ol class="space-y-2 text-sm text-gray-700">
+              <li class="flex items-start gap-2">
+                <span class="font-bold text-primary">1.</span>
+                <span>Buat file <code class="px-2 py-1 bg-gray-100 rounded text-xs font-mono">.env</code> di root project</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-bold text-primary">2.</span>
+                <span>Copy isi dari <code class="px-2 py-1 bg-gray-100 rounded text-xs font-mono">.env.example</code></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-bold text-primary">3.</span>
+                <span>Isi 3 API Key CoinGecko Anda di variabel <code class="px-2 py-1 bg-gray-100 rounded text-xs font-mono">NUXT_PUBLIC_COINGECKO_API_KEY_1</code>, <code class="px-2 py-1 bg-gray-100 rounded text-xs font-mono">_2</code>, dan <code class="px-2 py-1 bg-gray-100 rounded text-xs font-mono">_3</code></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-bold text-primary">4.</span>
+                <span>Restart server development Anda</span>
+              </li>
+            </ol>
+            <div class="mt-4 pt-4 border-t border-yellow-300">
+              <p class="text-xs text-gray-600">
+                <strong>Catatan:</strong> Belum punya API Key? Daftar gratis di 
+                <a href="https://www.coingecko.com/en/api" target="_blank" class="text-primary font-semibold hover:underline">CoinGecko API</a>
+              </p>
+            </div>
+          </div>
+          
           <button 
             @click="refreshData"
             class="px-8 py-3 bg-gradient-to-r from-primary to-blue hover:shadow-xl text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg"
@@ -162,8 +197,8 @@
           <strong class="text-text-primary font-display">CryptoStream</strong> 
         </p>
         <p class="text-xs text-text-muted max-w-2xl mx-auto mb-3">
-          Real-time cryptocurrency market analysis with live data from API • 
-          Binance supported
+          Real-time cryptocurrency market analysis with live data from CoinGecko API • 
+          9+ Cryptocurrencies supported
         </p>
         <p class="text-xs text-text-muted/70">
           Nuxt 3 • Vue 3 • TypeScript • TailwindCSS • ApexCharts • Pinia

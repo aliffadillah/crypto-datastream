@@ -1,4 +1,4 @@
-import { fetchBinance } from '../../utils/binanceClient'
+import { fetchCoinGecko, hasApiKeys } from '../../utils/coingeckoClient'
 
 interface CandleData {
   timestamp: number
@@ -9,164 +9,175 @@ interface CandleData {
   volume: number
 }
 
-type BinanceKline = [number, string, string, string, string, string]
+// CoinGecko OHLC response type: [timestamp, open, high, low, close]
+type CoingeckoOHLC = [number, number, number, number, number]
 
 /**
- * Konversi nama koin atau simbol ke format ticker Binance yang valid
- * Contoh: 'bitcoin' -> 'BTCUSDT', 'ethereum' -> 'ETHUSDT', 'BTC' -> 'BTCUSDT'
+ * Konversi nama koin atau simbol ke CoinGecko coin ID
+ * Contoh: 'BTC' -> 'bitcoin', 'BTCUSDT' -> 'bitcoin', 'ethereum' -> 'ethereum'
  */
 function normalizeSymbol(input: string): string {
-  // Mapping nama koin ke ticker
+  // Mapping symbol/name ke CoinGecko coin ID
   const symbolMap: Record<string, string> = {
-    'bitcoin': 'BTC',
-    'ethereum': 'ETH',
-    'solana': 'SOL',
-    'ripple': 'XRP',
-    'xrp': 'XRP',
-    'bnb': 'BNB',
-    'binancecoin': 'BNB',
-    'cardano': 'ADA',
-    'chainlink': 'LINK',
-    'dogecoin': 'DOGE',
-    'tron': 'TRX',
+    'btc': 'bitcoin',
+    'btcusdt': 'bitcoin',
+    'bitcoin': 'bitcoin',
+    'eth': 'ethereum',
+    'ethusdt': 'ethereum',
+    'ethereum': 'ethereum',
+    'sol': 'solana',
+    'solusdt': 'solana',
+    'solana': 'solana',
+    'xrp': 'ripple',
+    'xrpusdt': 'ripple',
+    'ripple': 'ripple',
+    'bnb': 'binancecoin',
+    'bnbusdt': 'binancecoin',
+    'binancecoin': 'binancecoin',
+    'ada': 'cardano',
+    'adausdt': 'cardano',
+    'cardano': 'cardano',
+    'link': 'chainlink',
+    'linkusdt': 'chainlink',
+    'chainlink': 'chainlink',
+    'doge': 'dogecoin',
+    'dogeusdt': 'dogecoin',
+    'dogecoin': 'dogecoin',
+    'trx': 'tron',
+    'trxusdt': 'tron',
+    'tron': 'tron',
   }
   
-  // Hapus spasi dan ubah ke lowercase untuk pencocokan
-  const normalized = input.toLowerCase().trim()
+  // Normalize input
+  const normalized = input.toLowerCase().trim().replace(/\//g, '')
   
-  // Jika input adalah nama koin, konversi ke ticker
-  if (symbolMap[normalized]) {
-    return symbolMap[normalized] + 'USDT'
-  }
-  
-  // Jika sudah format ticker tapi lowercase (misal: 'btc'), uppercase-kan
-  const upperInput = input.toUpperCase()
-  
-  // Jika sudah mengandung USDT, pastikan format benar
-  if (upperInput.includes('USDT')) {
-    // Hapus USDT kemudian tambahkan lagi untuk normalisasi
-    const ticker = upperInput.replace(/USDT/gi, '')
-    return ticker + 'USDT'
-  }
-  
-  // Jika hanya ticker (misal: 'BTC'), tambahkan USDT
-  if (upperInput.length >= 2 && upperInput.length <= 5 && !upperInput.includes('USDT')) {
-    return upperInput + 'USDT'
-  }
-  
-  // Default: kembalikan input yang sudah di-uppercase
-  return upperInput
+  // Return mapped coin ID or default to bitcoin
+  return symbolMap[normalized] || 'bitcoin'
 }
 
 export default defineEventHandler(async (event): Promise<CandleData[]> => {
   try {
+    // Check if API keys are configured
+    if (!hasApiKeys()) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'API Key Not Configured',
+        message: 'Tidak bisa mendapatkan data karena API Key belum diset. Silakan konfigurasi API Key CoinGecko di file .env'
+      })
+    }
+    
     const query = getQuery(event)
     const rawSymbol = (query.symbol as string) || 'BTCUSDT'
     
-    // Normalisasi simbol agar sesuai format Binance
-    const symbol = normalizeSymbol(rawSymbol)
-    const interval = (query.interval as string) || '5m'
-    const limit = parseInt((query.limit as string) || '60')
-    const startTime = query.startTime ? parseInt(query.startTime as string) : undefined
-    const endTime = query.endTime ? parseInt(query.endTime as string) : undefined
+    // Normalisasi simbol ke CoinGecko coin ID
+    const coinId = normalizeSymbol(rawSymbol)
+    const days = parseInt((query.days as string) || '1')
     
-    // Validasi interval yang didukung Binance
-    const validIntervals = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
-    if (!validIntervals.includes(interval)) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid interval',
-        message: `Interval harus salah satu dari: ${validIntervals.join(', ')}`
+    console.log(`📊 Fetching historical data for ${coinId} (${days} days)`)
+    
+    // CoinGecko hanya support OHLC untuk 1, 7, 14, 30, 90, 180, 365, max days
+    // Untuk days yang lebih detail, kita akan use market_chart
+    let historicalData: CandleData[]
+    
+    if (days <= 1) {
+      // For 1 day or less, use OHLC endpoint (gives 4-6 hour candles)
+      const ohlcData = await fetchCoinGecko<CoingeckoOHLC[]>(
+        `/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`,
+        {
+          retry: 2,
+          timeout: 15000,
+        }
+      )
+      
+      if (!Array.isArray(ohlcData) || ohlcData.length === 0) {
+        throw new Error('Invalid response from CoinGecko API')
+      }
+      
+      // Transform OHLC data
+      historicalData = ohlcData.map((candle): CandleData => ({
+        timestamp: candle[0],
+        open: candle[1],
+        high: candle[2],
+        low: candle[3],
+        close: candle[4],
+        volume: 0 // OHLC endpoint doesn't provide volume
+      }))
+    } else {
+      // For more than 1 day, use market_chart endpoint
+      const marketChart = await fetchCoinGecko<{
+        prices: [number, number][]
+        total_volumes: [number, number][]
+      }>(
+        `/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`,
+        {
+          retry: 2,
+          timeout: 15000,
+        }
+      )
+      
+      if (!marketChart.prices || !Array.isArray(marketChart.prices)) {
+        throw new Error('Invalid response from CoinGecko API')
+      }
+      
+      // Transform market chart data to candle format
+      historicalData = marketChart.prices.map((pricePoint, index): CandleData => {
+        const [timestamp, price] = pricePoint
+        const volume = marketChart.total_volumes[index] ? marketChart.total_volumes[index][1] : 0
+        
+        return {
+          timestamp,
+          open: price,
+          high: price * 1.02, // Approximate high
+          low: price * 0.98, // Approximate low
+          close: price,
+          volume
+        }
       })
     }
     
-    // Validasi limit
-    if (limit < 1 || limit > 1000) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid limit',
-        message: 'Limit harus antara 1 dan 1000'
-      })
-    }
+    console.log(`✅ Fetched ${historicalData.length} candles for ${coinId}`)
+    return historicalData
     
-    // Build path dengan parameter yang sudah divalidasi
-    let path = `/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
-    if (startTime) path += `&startTime=${startTime}`
-    if (endTime) path += `&endTime=${endTime}`
-    
-    console.log(`📊 Fetching historical data: ${path}`)
-    
-    // Fetch menggunakan fallback strategy untuk bypass ISP blocking
-    // Koneksi HTTPS aman dengan support proxy otomatis
-    const data = await fetchBinance<BinanceKline[]>(path, {
-      retry: 2,
-      timeout: 10000,
-    })
-    
-    // Check if data is an array
-    if (!Array.isArray(data)) {
-      console.error('Binance API returned non-array data:', data)
-      throw new Error('Invalid response format from Binance API')
-    }
-    
-    // Validate data structure
-    if (data.length === 0) {
-      return []
-    }
-    
-    return data.map((candle: BinanceKline): CandleData => ({
-      timestamp: candle[0],
-      open: parseFloat(candle[1]),
-      high: parseFloat(candle[2]),
-      low: parseFloat(candle[3]),
-      close: parseFloat(candle[4]),
-      volume: parseFloat(candle[5])
-    }))
   } catch (error: any) {
     console.error('Error fetching historical data:', error)
     
-    // Handle error 400 dengan pesan yang lebih deskriptif
+    // Pass through API key errors
+    if (error.statusCode === 401) {
+      throw error
+    }
+    
     if (error.statusCode === 400 || error.status === 400) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Invalid Request',
-        message: `Format simbol atau parameter tidak valid. Pastikan menggunakan format seperti BTCUSDT, ETHUSDT, dll. Error: ${error.message}`
+        message: `Format simbol atau parameter tidak valid. Error: ${error.message}`
       })
     }
     
     throw createError({
-      statusCode: 500,
-      statusMessage: 'Terdapat Kesalahan pada API Binance',
-      message: error.message || 'Tidak dapat terhubung ke server Binance'
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || 'CoinGecko API Error',
+      message: error.message || 'Tidak dapat terhubung ke server CoinGecko'
     })
   }
 })
 
 /*
- * CONTOH PENGGUNAAN OFETCH DI NUXT 3 (Client-side atau Server-side):
+ * CONTOH PENGGUNAAN DENGAN COINGECKO:
  * 
- * // Import ofetch (opsional, karena $fetch sudah tersedia)
- * import { ofetch } from 'ofetch'
- * 
- * // Contoh fetch data historis dengan simbol yang benar
- * const historicalData = await ofetch('/api/crypto/historical', {
+ * // Fetch historical data
+ * const historicalData = await $fetch('/api/crypto/historical', {
  *   query: {
- *     symbol: 'BTCUSDT',  // Atau 'bitcoin', akan otomatis dinormalisasi
- *     interval: '5m',      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
- *     limit: 60            // Maksimal 1000
+ *     symbol: 'BTC',  // Atau 'bitcoin', 'BTCUSDT' - akan otomatis dinormalisasi
+ *     days: 1         // 1, 7, 14, 30, 90, 180, 365, max
  *   }
  * })
  * 
- * // Contoh dengan startTime dan endTime
- * const customData = await ofetch('/api/crypto/historical', {
+ * // Contoh untuk cryptocurrency lain
+ * const ethData = await $fetch('/api/crypto/historical', {
  *   query: {
- *     symbol: 'ETHUSDT',
- *     interval: '1h',
- *     limit: 100,
- *     startTime: Date.now() - 7 * 24 * 60 * 60 * 1000, // 7 hari yang lalu
- *     endTime: Date.now()
+ *     symbol: 'ETH',
+ *     days: 7
  *   }
  * })
- * 
- * // Koneksi HTTPS tetap aman tanpa menonaktifkan verifikasi TLS
  */

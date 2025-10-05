@@ -125,12 +125,17 @@ const selectedCryptoSymbol = ref('BTC/USD')
 const cryptoCandleData = ref<CandleData[]>([])
 const isLoadingChart = ref(false)
 
-// Mapping crypto symbols to API symbols
-const symbolMapping: Record<string, { binance: string, coingecko: string, cryptocompare: string }> = {
-  'BTC/USD': { binance: 'BTCUSDT', coingecko: 'bitcoin', cryptocompare: 'BTC' },
-  'ETH/USD': { binance: 'ETHUSDT', coingecko: 'ethereum', cryptocompare: 'ETH' },
-  'SOL/USD': { binance: 'SOLUSDT', coingecko: 'solana', cryptocompare: 'SOL' },
-  'XRP/USD': { binance: 'XRPUSDT', coingecko: 'ripple', cryptocompare: 'XRP' }
+// Mapping crypto symbols to CoinGecko IDs
+const symbolMapping: Record<string, string> = {
+  'BTC/USD': 'bitcoin',
+  'ETH/USD': 'ethereum',
+  'SOL/USD': 'solana',
+  'XRP/USD': 'ripple',
+  'BNB/USD': 'binancecoin',
+  'ADA/USD': 'cardano',
+  'LINK/USD': 'chainlink',
+  'DOGE/USD': 'dogecoin',
+  'TRX/USD': 'tron'
 }
 
 // Fetch candle data for selected crypto
@@ -140,31 +145,15 @@ const fetchCandleData = async (symbol: string) => {
   try {
     const { useCryptoApi } = await import('~/services/cryptoApi')
     const api = useCryptoApi()
-    const config = useRuntimeConfig()
-    const provider = config.public.cryptoApiProvider || 'binance'
     
-    console.log(`📊 Fetching candle data for ${symbol} from ${provider}...`)
+    console.log(`📊 Fetching candle data for ${symbol} from CoinGecko...`)
     
-    const mapping = symbolMapping[symbol]
-    if (!mapping) {
+    const coinId = symbolMapping[symbol]
+    if (!coinId) {
       throw new Error(`No mapping found for ${symbol}`)
     }
     
-    let apiSymbol = ''
-    let options: any = {}
-    
-    if (provider === 'binance') {
-      apiSymbol = mapping.binance
-      options = { interval: '5m', limit: 60 }
-    } else if (provider === 'coingecko') {
-      apiSymbol = mapping.coingecko
-      options = { days: 1 }
-    } else if (provider === 'cryptocompare') {
-      apiSymbol = mapping.cryptocompare
-      options = { limit: 60 }
-    }
-    
-    const data = await api.getHistoricalData(apiSymbol, options)
+    const data = await api.getHistoricalData(coinId, { days: 1 })
     cryptoCandleData.value = data
     
     console.log(`✅ Loaded ${data.length} candles for ${symbol}`)

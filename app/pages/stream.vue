@@ -6,13 +6,24 @@
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-8 max-w-7xl">
       <!-- Error Alert -->
-      <div v-if="hasError" class="mb-6 p-4 bg-danger/10 border border-danger/20 rounded-xl animate-fade-in">
-        <div class="flex items-center gap-3">
-          <svg class="w-5 h-5 text-danger flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+      <div v-if="hasError" class="mb-6 p-6 bg-danger/10 border-2 border-danger/20 rounded-xl animate-fade-in">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-danger/20 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
           <div class="flex-1">
-            <p class="text-danger font-semibold">{{ errorMessage }}</p>
+            <h3 class="text-danger font-bold text-lg mb-2">Tidak Bisa Mendapatkan Data</h3>
+            <p class="text-danger/90 font-medium mb-4">{{ errorMessage }}</p>
+            <div class="bg-white/50 rounded-lg p-4 text-sm">
+              <p class="text-gray-700 mb-2"><strong>Solusi:</strong></p>
+              <ol class="list-decimal list-inside space-y-1 text-gray-600">
+                <li>Pastikan file <code class="px-2 py-0.5 bg-gray-200 rounded text-xs">.env</code> sudah dibuat</li>
+                <li>Isi 3 API Key CoinGecko di variabel <code class="px-2 py-0.5 bg-gray-200 rounded text-xs">NUXT_PUBLIC_COINGECKO_API_KEY_1</code>, <code class="px-2 py-0.5 bg-gray-200 rounded text-xs">_2</code>, dan <code class="px-2 py-0.5 bg-gray-200 rounded text-xs">_3</code></li>
+                <li>Restart server development</li>
+              </ol>
+            </div>
           </div>
           <button @click="hasError = false" class="text-danger hover:text-danger/80 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

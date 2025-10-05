@@ -18,8 +18,8 @@ export function useHistoricalData() {
     error.value = null
 
     try {
-      // Convert symbol to Binance format
-      const binanceSymbol = convertToBinanceSymbol(symbol)
+      // Convert symbol to CoinGecko format
+      const coinId = convertToCoinGeckoId(symbol)
       
       // Calculate start and end timestamps
       const startTime = new Date(startDate).getTime()
@@ -29,7 +29,7 @@ export function useHistoricalData() {
       const limit = calculateLimit(startTime, endTime, interval)
       
       console.log('📊 Fetching historical data:', {
-        symbol: binanceSymbol,
+        symbol: coinId,
         interval,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
@@ -40,7 +40,7 @@ export function useHistoricalData() {
       const api = useCryptoApi()
       
       // Fetch data
-      const historicalData = await api.getHistoricalData(binanceSymbol, {
+      const historicalData = await api.getHistoricalData(coinId, {
         interval,
         limit,
         startTime,
@@ -68,48 +68,41 @@ export function useHistoricalData() {
   }
 
   /**
-   * Convert symbol to Binance format
+   * Convert symbol to CoinGecko ID format
    */
-  const convertToBinanceSymbol = (symbol: string): string => {
-    // Remove /USD and add USDT
-    if (symbol.includes('/')) {
-      const parts = symbol.split('/')
-      const base = parts[0] ? parts[0].toUpperCase() : 'BTC'
-      return `${base}USDT`
-    }
-    
-    if (symbol.includes('USDT')) {
-      return symbol.toUpperCase()
-    }
-    
-    // Handle common crypto names
+  const convertToCoinGeckoId = (symbol: string): string => {
+    // Mapping ke CoinGecko coin IDs
     const symbolMap: Record<string, string> = {
-      'BITCOIN': 'BTCUSDT',
-      'ETHEREUM': 'ETHUSDT',
-      'SOLANA': 'SOLUSDT',
-      'RIPPLE': 'XRPUSDT',
-      'XRP': 'XRPUSDT',
-      'BTC': 'BTCUSDT',
-      'ETH': 'ETHUSDT',
-      'SOL': 'SOLUSDT',
-      'BNB': 'BNBUSDT',
-      'CARDANO': 'ADAUSDT',
-      'ADA': 'ADAUSDT',
-      'CHAINLINK': 'LINKUSDT',
-      'LINK': 'LINKUSDT',
-      'DOGECOIN': 'DOGEUSDT',
-      'DOGE': 'DOGEUSDT',
-      // USDTUSDT tidak valid, dihapus
-      'TRON': 'TRXUSDT',
-      'TRX': 'TRXUSDT'
+      'BTC/USD': 'bitcoin',
+      'ETH/USD': 'ethereum',
+      'SOL/USD': 'solana',
+      'XRP/USD': 'ripple',
+      'BNB/USD': 'binancecoin',
+      'ADA/USD': 'cardano',
+      'LINK/USD': 'chainlink',
+      'DOGE/USD': 'dogecoin',
+      'TRX/USD': 'tron',
+      'BITCOIN': 'bitcoin',
+      'ETHEREUM': 'ethereum',
+      'SOLANA': 'solana',
+      'RIPPLE': 'ripple',
+      'XRP': 'ripple',
+      'BTC': 'bitcoin',
+      'ETH': 'ethereum',
+      'SOL': 'solana',
+      'BNB': 'binancecoin',
+      'CARDANO': 'cardano',
+      'ADA': 'cardano',
+      'CHAINLINK': 'chainlink',
+      'LINK': 'chainlink',
+      'DOGECOIN': 'dogecoin',
+      'DOGE': 'dogecoin',
+      'TRON': 'tron',
+      'TRX': 'tron'
     }
     
     const upperSymbol = symbol.toUpperCase()
-    if (symbolMap[upperSymbol]) {
-      return symbolMap[upperSymbol]
-    }
-    
-    return `${upperSymbol}USDT`
+    return symbolMap[upperSymbol] || symbolMap[symbol] || 'bitcoin'
   }
 
   /**
@@ -133,8 +126,8 @@ export function useHistoricalData() {
     const intervalDuration = intervalMs[interval] || intervalMs['5m'] || 300000
     const calculatedLimit = Math.ceil(duration / intervalDuration)
     
-    // Binance API limit is 1000
-    return Math.min(calculatedLimit, 1000)
+    // CoinGecko has different limits based on days parameter
+    return Math.min(calculatedLimit, 365)
   }
 
   /**

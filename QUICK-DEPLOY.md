@@ -23,16 +23,18 @@ Aplikasi Anda akan live di: `https://crypto-datastream.vercel.app`
 
 ---
 
-## 🔧 Konfigurasi (Optional)
+## 🔧 Konfigurasi (Required)
 
-Jika perlu custom settings:
-
-### Environment Variables
-Di Vercel Dashboard → Settings → Environment Variables:
+Di Vercel Dashboard → Settings → Environment Variables, tambahkan:
 
 ```
-NUXT_PUBLIC_CRYPTO_API_PROVIDER=binance
+NUXT_PUBLIC_CRYPTO_API_PROVIDER=coingecko
+NUXT_PUBLIC_COINGECKO_API_KEY_1=your_key_1
+NUXT_PUBLIC_COINGECKO_API_KEY_2=your_key_2
+NUXT_PUBLIC_COINGECKO_API_KEY_3=your_key_3
 ```
+
+📖 Lihat [COINGECKO_SETUP.md](./COINGECKO_SETUP.md) untuk panduan mendapatkan API keys.
 
 ### Custom Domain
 Settings → Domains → Add Domain

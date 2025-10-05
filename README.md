@@ -35,7 +35,7 @@ Real-time cryptocurrency market data dashboard with live streaming and historica
 - **UI**: TailwindCSS
 - **Charts**: ApexCharts
 - **State Management**: Pinia
-- **API**: Binance Public API
+- **API**: CoinGecko API
 - **Language**: TypeScript
 
 ## 📦 Installation
@@ -44,6 +44,15 @@ Real-time cryptocurrency market data dashboard with live streaming and historica
 # Install dependencies
 npm install
 
+# Setup API Keys
+# 1. Copy .env.example to .env
+cp .env.example .env
+
+# 2. Edit .env and add your 3 CoinGecko API keys
+# NUXT_PUBLIC_COINGECKO_API_KEY_1=your_api_key_1
+# NUXT_PUBLIC_COINGECKO_API_KEY_2=your_api_key_2
+# NUXT_PUBLIC_COINGECKO_API_KEY_3=your_api_key_3
+
 # Run development server
 npm run dev
 
@@ -51,62 +60,25 @@ npm run dev
 npm run build
 ```
 
-## 🛡️ ISP Blocking Solution (Indonesia)
+## 🔑 API Configuration
 
-**Masalah:** Binance API diblokir oleh ISP di Indonesia
+This application uses **CoinGecko API** with API key rotation system:
 
-**Solusi:** Proyek ini sudah dilengkapi dengan **automatic fallback strategy**:
+### Getting API Keys:
+1. Register at [CoinGecko API](https://www.coingecko.com/en/api)
+2. Get 3 API keys (for rotation to avoid rate limits)
+3. Add them to your `.env` file
 
-### Quick Setup (3 options):
-
-**1. SSH Tunnel (Recommended untuk Development):**
-```powershell
-# Terminal 1: Buat tunnel
-ssh -D 1080 -C -N user@your-server.com
-
-# Terminal 2: Run dengan proxy
-$env:USE_PROXY="true"; $env:HTTPS_PROXY="socks5://127.0.0.1:1080"; npm run dev
-```
-
-**2. Deploy ke Cloud (Recommended untuk Production):**
-```bash
-# Deploy ke Vercel (GRATIS & AUTO WORKS)
-npm i -g vercel
-vercel
-```
-
-**3. Premium Proxy (Stable):**
-```bash
-# Edit .env
-USE_PROXY=true
-HTTPS_PROXY=http://user:pass@proxy.smartproxy.com:7000
-```
-
-📖 **Dokumentasi Lengkap:**
-- **QUICK_PROXY_SETUP.md** - Setup cepat 3 menit
-- **PROXY_SETUP_GUIDE.md** - Panduan lengkap semua opsi
-
-### Features:
-- ✅ Auto-detect proxy dari environment
-- ✅ Fallback ke alternative endpoints
-- ✅ Support SOCKS5, HTTP, HTTPS proxy
-- ✅ Multiple retry strategies
-- ✅ Detailed logging untuk debugging
-
-## 🌐 API Integration
-
-This application uses **Binance Public API** (no API key required):
-- `/api/v3/ticker/24hr` - 24-hour ticker price change statistics
-- `/api/v3/klines` - Candlestick/kline data with historical support
+📖 **Detailed Setup Guide:** See [COINGECKO_SETUP.md](./COINGECKO_SETUP.md) for complete instructions.
 
 ### API Features:
-- ✅ Real market data from Binance
-- ✅ Free to use (no authentication required)
-- ✅ Support for historical data with timestamps
-- ✅ Multiple interval options
-- ✅ Up to 1000 data points per request
-- ✅ **ISP blocking bypass** with proxy support
-- ✅ **Auto fallback** ke alternative endpoints
+- ✅ Real market data from CoinGecko
+- ✅ 3 API key rotation system to avoid rate limits
+- ✅ Support for historical data (OHLC)
+- ✅ Multiple cryptocurrency support (9+ coins)
+- ✅ Automatic key switching on rate limit
+- ✅ Comprehensive error handling
+- ✅ No ISP blocking issues (works in Indonesia)
 
 ## 📱 Pages
 
@@ -202,4 +174,4 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-Built with ❤️ using Nuxt 3 and Binance API
+Built with ❤️ using Nuxt 3 and CoinGecko API
