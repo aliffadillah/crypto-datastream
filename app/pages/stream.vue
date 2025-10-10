@@ -5,6 +5,26 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 md:px-6 py-4 md:py-8 max-w-7xl">
+      <!-- WebSocket Info Banner -->
+      <div v-if="isLive" class="mb-4 md:mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl animate-fade-in">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 bg-success rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-green-900 mb-1 flex items-center gap-2">
+              <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+              WebSocket Real-Time Mode Active
+            </h3>
+            <p class="text-sm text-green-800">
+              Data streaming live dari <strong>Binance WebSocket API</strong> • Update instant tanpa delay • Zero API key required
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Error Alert -->
       <div v-if="hasError" class="mb-4 md:mb-6 p-4 md:p-6 bg-danger/10 border-2 border-danger/20 rounded-xl animate-fade-in">
         <div class="flex items-start gap-4">
@@ -37,8 +57,8 @@
       <div class="mb-6 md:mb-8 animate-fade-in">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h1 class="text-2xl md:text-3xl font-display font-bold text-text-primary mb-1 md:mb-2">Data Stream</h1>
-            <p class="text-sm md:text-base text-text-tertiary">Real-time crypto market updates every 5s</p>
+            <h1 class="text-2xl md:text-3xl font-display font-bold text-text-primary mb-1 md:mb-2">Real-Time Data Stream</h1>
+            <p class="text-sm md:text-base text-text-tertiary">Live WebSocket updates • Zero delay • No API key required</p>
           </div>
           
           <!-- Refresh Button -->
@@ -309,13 +329,15 @@
         </div>
 
           <!-- Pagination Info -->
-          <div class="mt-6 flex items-center justify-between text-sm text-text-tertiary border-t border-finance-border pt-4">
+          <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-text-tertiary border-t border-finance-border pt-4">
             <div>
-              Showing <span class="font-semibold text-text-secondary">{{ streamData.length }}</span> real-time data points
+              Showing <span class="font-semibold text-text-secondary">{{ streamData.length }}</span> real-time data snapshots
             </div>
             <div class="flex items-center gap-2">
               <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-              <span>Auto-updating every 5 seconds</span>
+              <span class="flex items-center gap-2">
+                <strong class="text-success">WebSocket Live</strong> • Instant updates from Binance
+              </span>
             </div>
           </div>
         </div>
@@ -400,24 +422,25 @@ import {
   formatTimeAgo
 } from '~/utils/formatters'
 
-// Use crypto data composable with error handling
+// Use WebSocket for real-time data (no API key needed!)
 const { 
   assets, 
   lastUpdate, 
   initialize, 
-  startAutoRefresh, 
-  stopAutoRefresh,
-  isLoading 
-} = useCryptoData()
+  reconnect,
+  cleanup,
+  isLoading,
+  isLive 
+} = useWebSocketCrypto()
 
-// Use historical data composable
-const {
-  data: historicalData,
-  isLoading: isLoadingHistorical,
-  error: historicalError,
-  fetchHistoricalData,
-  clearData: clearHistoricalData
-} = useHistoricalData()
+const startAutoRefresh = () => {}
+const stopAutoRefresh = () => {}
+
+const historicalData = ref([])
+const isLoadingHistorical = ref(false)
+const historicalError = ref<string | null>(null)
+const fetchHistoricalData = () => {}
+const clearHistoricalData = () => {}
 
 const selectedCrypto = ref<string>('')
 const streamData = ref<any[]>([])
@@ -479,28 +502,22 @@ const generateStreamData = () => {
   if (!selectedAsset.value) return
 
   try {
-    const data = []
-    const basePrice = selectedAsset.value.price
+    // Add initial data point from current WebSocket data
     const now = Date.now()
+    const currentPrice = selectedAsset.value.price
+    const change = selectedAsset.value.change24h
+    const volume = selectedAsset.value.volume24h
+    const marketCap = currentPrice * 19000000
 
-    // Generate 20 data points (simulated historical data)
-    for (let i = 19; i >= 0; i--) {
-      const timestamp = now - (i * 5000) // Every 5 seconds
-      const randomChange = (Math.random() - 0.5) * 4 // -2% to +2%
-      const price = basePrice * (1 + randomChange / 100)
-      const volume = selectedAsset.value.volume24h * (0.8 + Math.random() * 0.4)
-      const marketCap = price * 19000000 // Simplified market cap calculation
-
-      data.push({
-        timestamp,
-        price,
-        change: randomChange,
-        volume,
-        marketCap
-      })
-    }
-
-    streamData.value = data
+    streamData.value = [{
+      timestamp: now,
+      price: currentPrice,
+      change: change,
+      volume: volume,
+      marketCap: marketCap
+    }]
+    
+    console.log('✅ Initial stream data generated for', selectedCrypto.value)
   } catch (error) {
     console.error('Error generating stream data:', error)
     hasError.value = true
@@ -513,23 +530,24 @@ const addNewStreamData = () => {
 
   try {
     const now = Date.now()
-    const lastPrice = streamData.value.length > 0 
-      ? streamData.value[streamData.value.length - 1].price 
-      : selectedAsset.value.price
     
-    // Generate realistic price movement
-    const priceVariation = (Math.random() - 0.5) * (lastPrice * 0.003) // ±0.3% variation
-    const newPrice = lastPrice + priceVariation
-    const change = ((newPrice - selectedAsset.value.price) / selectedAsset.value.price) * 100
+    // Use REAL data from WebSocket
+    const currentPrice = selectedAsset.value.price
+    const change24h = selectedAsset.value.change24h
+    const volume = selectedAsset.value.volume24h
+    
+    // Calculate simple market cap (price * circulating supply estimate)
+    const marketCap = currentPrice * 19000000 // Simplified
     
     const newData = {
       timestamp: now,
-      price: newPrice,
-      change: change,
-      volume: selectedAsset.value.volume24h * (0.8 + Math.random() * 0.4),
-      marketCap: newPrice * 19000000
+      price: currentPrice,
+      change: change24h,
+      volume: volume,
+      marketCap: marketCap
     }
     
+    // Add to stream
     streamData.value.push(newData)
     
     // Keep only last 20 items to prevent memory issues
@@ -540,6 +558,8 @@ const addNewStreamData = () => {
         .filter(ts => ts < streamData.value[0].timestamp)
       oldTimestamps.forEach(ts => previousPrices.value.delete(ts))
     }
+    
+    console.log('📊 Stream data added:', selectedCrypto.value, '$' + currentPrice.toFixed(2))
   } catch (error) {
     console.error('Error adding stream data:', error)
   }
@@ -551,14 +571,15 @@ const startStream = () => {
     return
   }
 
-  console.log('🎬 Starting data stream...')
+  console.log('🎬 Starting real-time data stream with WebSocket...')
   isStreamActive.value = true
   
+  // Capture data snapshots every 3 seconds to build history
   streamInterval.value = setInterval(() => {
     if (selectedCrypto.value && selectedAsset.value) {
       addNewStreamData()
     }
-  }, 5000) // Update every 5 seconds
+  }, 3000) // Capture every 3 seconds for responsive updates
 }
 
 const stopStream = () => {
@@ -608,25 +629,9 @@ const getRowFlashClass = (data: any) => {
 
 // Historical data methods
 const loadHistoricalData = async () => {
-  if (!selectedCrypto.value || !historicalStartDate.value || !historicalEndDate.value) {
-    hasError.value = true
-    errorMessage.value = 'Please select a date range'
-    return
-  }
-
-  try {
-    hasError.value = false
-    await fetchHistoricalData(
-      selectedCrypto.value,
-      historicalStartDate.value,
-      historicalEndDate.value,
-      historicalInterval.value
-    )
-  } catch (error: any) {
-    console.error('Error loading historical data:', error)
-    hasError.value = true
-    errorMessage.value = error.message || 'Failed to load historical data'
-  }
+  // Historical data not available with WebSocket
+  // Only live streaming is supported
+  historicalError.value = 'Historical data requires CoinGecko API. Use WebSocket tab for real-time data only.'
 }
 
 const onDateRangeChange = (values: any) => {
@@ -676,6 +681,21 @@ const exportStreamData = () => {
   }
 }
 
+// Watch for WebSocket updates on selected asset
+watch(
+  () => selectedAsset.value,
+  (newAsset, oldAsset) => {
+    // If price changed and we have a selected crypto with active stream
+    if (newAsset && oldAsset && isStreamActive.value) {
+      if (newAsset.price !== oldAsset.price) {
+        console.log('🔄 WebSocket update detected, adding to stream...')
+        addNewStreamData()
+      }
+    }
+  },
+  { deep: true }
+)
+
 // Lifecycle hooks
 onMounted(async () => {
   try {
@@ -684,8 +704,7 @@ onMounted(async () => {
       await initialize()
     }
     
-    // Start auto-refresh for asset data (every 30 seconds)
-    startAutoRefresh(30)
+    console.log('✅ Stream page initialized with WebSocket real-time data')
   } catch (error) {
     console.error('Error initializing stream page:', error)
     hasError.value = true
@@ -696,7 +715,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   // Clean up intervals
   stopStream()
-  stopAutoRefresh()
+  cleanup() // Cleanup WebSocket
   
   // Clear data to free memory
   streamData.value = []

@@ -101,7 +101,10 @@
 </template>
 
 <script setup lang="ts">
-const { assets, candleData } = useCryptoData()
+// Switch to WebSocket for real-time data
+const { assets } = useWebSocketCrypto()
+// candleData not available in WebSocket (only for historical charts)
+const candleData = ref([])
 const { exportCandleDataToCSV, exportAssetsToJSON } = useDataExport()
 
 const isExporting = ref(false)

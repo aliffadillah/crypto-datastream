@@ -2,7 +2,7 @@
   <div class="card">
     <!-- Crypto Selector -->
     <div class="mb-4 md:mb-6 pb-3 md:pb-4 border-b border-dark-border">
-      <h3 class="text-xs md:text-sm font-semibold text-dark-text-secondary mb-2 md:mb-3">Select Cryptocurrency</h3>
+      <h3 class="text-xs md:text-sm text-dark-text-secondary mb-2 md:mb-3">Select Cryptocurrency</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
         <button
           v-for="asset in assets"
@@ -117,10 +117,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { ApexOptions } from 'apexcharts'
 import type { CandleData } from '~/types/crypto'
 
-const { assets } = useCryptoData()
+// Switch to WebSocket for real-time data
+const { assets } = useWebSocketCrypto()
 
 // Local state for selected crypto and its candle data
 const selectedCryptoSymbol = ref('BTC/USD')
@@ -161,24 +163,19 @@ const symbolMapping: Record<string, string> = {
 }
 
 // Fetch candle data for selected crypto
+// NOTE: CandlestickChart requires historical OHLC data which is not available via WebSocket
+// For now, using mock/empty data. To enable, need CoinGecko API or alternative historical data source
 const fetchCandleData = async (symbol: string) => {
   isLoadingChart.value = true
   
   try {
-    const { useCryptoApi } = await import('~/services/cryptoApi')
-    const api = useCryptoApi()
+    console.log(`📊 Candlestick data not available with WebSocket (only live prices)`)
+    console.log(`💡 Tip: Historical OHLC data requires CoinGecko API or similar service`)
     
-    console.log(`📊 Fetching candle data for ${symbol} from CoinGecko...`)
+    // Set empty data for now
+    cryptoCandleData.value = []
     
-    const coinId = symbolMapping[symbol]
-    if (!coinId) {
-      throw new Error(`No mapping found for ${symbol}`)
-    }
-    
-    const data = await api.getHistoricalData(coinId, { days: 1 })
-    cryptoCandleData.value = data
-    
-    console.log(`✅ Loaded ${data.length} candles for ${symbol}`)
+    console.log(`⚠️ No historical candle data available for ${symbol}`)
   } catch (error) {
     console.error(`❌ Error fetching candle data for ${symbol}:`, error)
     cryptoCandleData.value = []
@@ -212,7 +209,7 @@ const series = computed(() => {
     return []
   }
 
-  const data = cryptoCandleData.value.map(candle => {
+  const data = cryptoCandleData.value.map((candle: CandleData) => {
     // Ensure timestamp is a number
     const timestamp = typeof candle.timestamp === 'number' 
       ? candle.timestamp 

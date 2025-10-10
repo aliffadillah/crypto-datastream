@@ -101,94 +101,94 @@
         <template v-if="!isLoading && !wsState.error">
           <!-- Hero Section with Key Metrics -->
           <section class="mb-6 md:mb-8 animate-slide-up">
-            <div class="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
-                <div>
-                  <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
-                    Live Market Data
-                  </h2>
-                  <p class="text-sm md:text-base text-gray-600">Real-time updates via WebSocket connection</p>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="px-3 py-1.5 md:px-4 md:py-2 bg-success/10 rounded-lg border border-success/20">
-                    <div class="flex items-center gap-2">
-                      <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                      <span class="text-[10px] md:text-xs font-semibold text-success uppercase tracking-wide">WEBSOCKET ACTIVE</span>
-                    </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
+              <div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
+                  Live Market Data
+                </h2>
+                <p class="text-sm md:text-base text-gray-600">Real-time updates via WebSocket connection</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="px-3 py-1.5 md:px-4 md:py-2 bg-success/10 rounded-lg border border-success/20">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                    <span class="text-[10px] md:text-xs font-semibold text-success uppercase tracking-wide">WEBSOCKET ACTIVE</span>
                   </div>
                 </div>
               </div>
-              <StatusWidget />
             </div>
-          </section>
+            <StatusWidget />
+          </div>
+        </section>
 
-          <!-- Crypto Ticker Table -->
-          <section class="animate-fade-in">
-            <CryptoTickerTable />
-          </section>
+        <!-- Crypto Ticker Table -->
+        <section class="animate-fade-in">
+          <CryptoTickerTable />
+        </section>
 
-          <!-- WebSocket Stats -->
-          <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
-            <div class="bg-white border border-gray-200 rounded-xl p-4">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500 font-semibold uppercase">Connection</p>
-                  <p class="text-lg font-bold text-gray-900">{{ connectionStatus }}</p>
-                </div>
+        <!-- WebSocket Stats -->
+        <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 font-semibold uppercase">Connection</p>
+                <p class="text-lg font-bold text-gray-900">{{ connectionStatus }}</p>
               </div>
             </div>
+          </div>
 
-            <div class="bg-white border border-gray-200 rounded-xl p-4">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500 font-semibold uppercase">Last Update</p>
-                  <p class="text-lg font-bold text-gray-900">{{ timeAgo }}</p>
-                </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 font-semibold uppercase">Last Update</p>
+                <p class="text-lg font-bold text-gray-900">{{ timeAgo }}</p>
               </div>
             </div>
+          </div>
 
-            <div class="bg-white border border-gray-200 rounded-xl p-4">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500 font-semibold uppercase">Symbols</p>
-                  <p class="text-lg font-bold text-gray-900">{{ assets.length }}</p>
-                </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 font-semibold uppercase">Symbols</p>
+                <p class="text-lg font-bold text-gray-900">{{ assets.length }}</p>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
         </template>
+      </ClientOnly>
 
       <!-- Footer Info -->
       <section class="text-center text-text-tertiary text-sm py-12 border-t border-finance-border mt-12">
         <div class="mb-4">
           <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full mb-3">
             <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-            <span class="text-xs font-semibold text-text-secondary">WebSocket Real-Time</span>
+            <span class="text-xs font-semibold text-text-secondary">WebSocket Demo</span>
           </div>
         </div>
         <p class="mb-2 text-base">
-          <strong class="text-text-primary font-display">Live Cryptocurrency Market Dashboard</strong> 
+          <strong class="text-text-primary font-display">Real-Time WebSocket Implementation</strong> 
         </p>
         <p class="text-xs text-text-muted max-w-2xl mx-auto mb-3">
           Powered by Binance WebSocket API • Zero polling • Instant updates • No API key required
         </p>
       </section>
-      </ClientOnly>
     </main>
   </div>
 </template>
@@ -197,17 +197,7 @@
 import { computed } from 'vue'
 import { formatTimeAgo } from '~/utils/formatters'
 
-const { 
-  assets, 
-  isLoading, 
-  wsState,
-  lastUpdate,
-  isLive,
-  connectionStatus,
-  initialize, 
-  reconnect,
-  cleanup 
-} = useWebSocketCrypto()
+const { assets, isLoading, wsState, lastUpdate, isLive, connectionStatus, topGainer, initialize, reconnect, cleanup } = useWebSocketCrypto()
 
 // Time ago computed
 const timeAgo = computed(() => {
@@ -224,9 +214,9 @@ onUnmounted(() => {
 })
 
 useHead({
-  title: 'CryptoStream - Real-Time WebSocket Dashboard',
+  title: 'WebSocket Real-Time Stream - CryptoStream',
   meta: [
-    { name: 'description', content: 'Real-time cryptocurrency market data via WebSocket. Live updates from Binance with zero delay and no API key required.' }
+    { name: 'description', content: 'Real-time cryptocurrency market data via WebSocket connection with instant updates' }
   ]
 })
 </script>

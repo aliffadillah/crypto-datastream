@@ -178,7 +178,8 @@ import {
   getPriceArrow
 } from '~/utils/formatters'
 
-const { assets, lastUpdate } = useCryptoData()
+// Switch to WebSocket for real-time data
+const { assets, lastUpdate } = useWebSocketCrypto()
 
 // Track previous prices for flash animation
 const previousPrices = ref<Map<string, number>>(new Map())

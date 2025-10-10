@@ -31,15 +31,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // CoinGecko API Keys (3 keys for rotation)
-      coingeckoApiKey1: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_1 || '',
-      coingeckoApiKey2: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_2 || '',
-      coingeckoApiKey3: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_3 || '',
-      coingeckoApiKey4: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_4 || '',
-      coingeckoApiKey5: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_5 || '',
-      coingeckoApiKey6: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_6 || '',
-      coingeckoApiKey7: process.env.NUXT_PUBLIC_COINGECKO_API_KEY_7 || '',
-      cryptoApiProvider: process.env.NUXT_PUBLIC_CRYPTO_API_PROVIDER || 'coingecko'
+      cryptoDataSource: 'binance-websocket'
     }
   },
 

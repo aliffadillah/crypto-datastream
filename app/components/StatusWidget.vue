@@ -97,7 +97,10 @@
 <script setup lang="ts">
 import { formatTimeAgo } from '~/utils/formatters'
 
-const { assets, candleData, lastUpdate, isLive } = useCryptoData()
+// Switch to WebSocket for real-time data
+const { assets, lastUpdate, isLive } = useWebSocketCrypto()
+// candleData not available in WebSocket (only for historical charts)
+const candleData = ref([])
 
 const topGainer = computed(() => {
   if (!assets.value || assets.value.length === 0) return 'N/A'

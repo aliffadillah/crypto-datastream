@@ -102,10 +102,10 @@
         >
           <span class="relative z-10 flex items-center gap-1.5 md:gap-2">
             <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <span class="hidden sm:inline">Market Overview</span>
-            <span class="sm:hidden">Market</span>
+            <span class="hidden sm:inline">WebSocket Live</span>
+            <span class="sm:hidden">Live</span>
           </span>
           <div v-if="$route.path === '/'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"></div>
         </NuxtLink>
@@ -125,6 +125,23 @@
             <span class="sm:hidden">Stream</span>
           </span>
           <div v-if="$route.path === '/stream'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"></div>
+        </NuxtLink>
+
+        <NuxtLink 
+          to="/websocket" 
+          class="relative px-4 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold transition-all duration-200 rounded-lg whitespace-nowrap flex-shrink-0"
+          :class="$route.path === '/websocket' 
+            ? 'text-primary bg-primary/10' 
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+        >
+          <span class="relative z-10 flex items-center gap-1.5 md:gap-2">
+            <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span class="hidden sm:inline">WebSocket</span>
+            <span class="sm:hidden">WS</span>
+          </span>
+          <div v-if="$route.path === '/websocket'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"></div>
         </NuxtLink>
         
         <!-- Spacer -->
@@ -157,7 +174,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const { refreshData } = useCryptoData()
+// Switch to WebSocket for real-time data
+const { reconnect } = useWebSocketCrypto()
+// Mock refreshData for compatibility
+const refreshData = () => reconnect()
 
 const currentTime = ref('')
 const isRefreshing = ref(false)
